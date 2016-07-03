@@ -47,10 +47,10 @@ MinerGame.Player = function(game, x, y) {
   this.game.physics.arcade.enable(this);
   this.body.collideWorldBounds = true;
   this.body.setSize(8, 12, 4, 4);
-  this.body.gravity.y = 450;
+  this.body.gravity.y = 500;
   this.body.maxVelocity.x = 260;
-  this.body.maxVelocity.y = 250;
-  this.accelConst = 1500;
+  this.body.maxVelocity.y = 290;
+  this.accelConst = 1800;
   this.body.acceleration.x = 0;
   this.body.drag.x = 1400;
   this.wallCheck = false; // for custom wall check
