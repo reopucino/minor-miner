@@ -43,7 +43,7 @@ MinerGame.menuState.prototype = {
     titleText.anchor.setTo(0.5, 0.5);
 
     // create menu text
-    var startText = this.game.add.bitmapText(this.game.world.centerX, this.game.height - 150, 'carrier_command', 'PRESS \'X\' TO START', 8);
+    var startText = this.game.add.bitmapText(this.game.world.centerX, this.game.height - 150, 'carrier_command', 'PRESS \'X\' TO START', 12);
     startText.anchor.setTo(0.5, 0.5);
 
     // start button

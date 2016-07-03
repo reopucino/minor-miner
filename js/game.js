@@ -9,6 +9,7 @@ MinerGame.game.state.add('boot', MinerGame.bootState);
 MinerGame.game.state.add('preload', MinerGame.preloadState);
 MinerGame.game.state.add('menu', MinerGame.menuState);
 MinerGame.game.state.add('play', MinerGame.playState);
+MinerGame.game.state.add('thanks', MinerGame.thanksState);
 
 // run game
 MinerGame.game.state.start('boot');

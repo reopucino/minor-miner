@@ -2,7 +2,7 @@ var MinerGame = MinerGame || {};
 
 MinerGame.level = '1';
 MinerGame.secrets = 0;
-MinerGame.totalSecrets = 15;
+MinerGame.totalSecrets = 4;
 MinerGame.startTime = MinerGame.startTime || 0;
 
 // GAMEPLAY STATE //
@@ -25,6 +25,10 @@ MinerGame.playState.prototype = {
     this.secretSound.volume -= .5;
 
     // init the tile map
+    if (MinerGame.level === 'end') {
+      MinerGame.level = 1;
+      this.game.state.start('thanks');
+    }
     this.map = this.game.add.tilemap(MinerGame.level);
     this.map.addTilesetImage('stageTiles', 'tiles');
 
