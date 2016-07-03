@@ -7,6 +7,10 @@ MinerGame.Player = function(game, x, y) {
   this.game.layers.player.add(this); // rendering layer
   this.anchor.setTo(0.5);
 
+  // sounds
+  this.jumpSound = this.game.add.audio('jump');
+  this.jumpSound.volume -= .5;
+
   // secrets and upgrades
   this.secrets = 0;
 
@@ -43,14 +47,15 @@ MinerGame.Player = function(game, x, y) {
   this.game.physics.arcade.enable(this);
   this.body.collideWorldBounds = true;
   this.body.setSize(8, 12, 4, 4);
-  this.body.gravity.y = 500;
+  this.body.gravity.y = 450;
   this.body.maxVelocity.x = 260;
-  this.body.maxVelocity.y = 290;
-  this.accelConst = 1800;
+  this.body.maxVelocity.y = 250;
+  this.accelConst = 1500;
   this.body.acceleration.x = 0;
-  this.body.drag.x = 1300;
+  this.body.drag.x = 1400;
   this.wallCheck = false; // for custom wall check
   this.groundCheck = false; // for custom ground check
+  this.jumpTimer = 0;
 
   // move player with cursor keys, jump with x
   this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -58,14 +63,18 @@ MinerGame.Player = function(game, x, y) {
 
   // jump button handler
   this.jumpBtn.onDown.add(function() {
-    // if player is dead, return
-    if (!this.body || this.spawning) {
+    // if player is dead, or if player has already jumped, return
+
+    if (!this.body || this.spawning || this.jumpTimer > this.game.time.time - 280) {
+      console.log('stopped extra jump');
       return;
     }
 
     var x;
     // if on the wall
     if (this.onWall() && !this.onFloor()) {
+      this.jumpTimer = this.game.time.time;
+      this.jumpSound.play();
       this.body.velocity.y = -220;
       // jump away from wall
       if (this.facing === 'left') {
@@ -86,6 +95,8 @@ MinerGame.Player = function(game, x, y) {
       this.currentState = this.airState;
     // if on the floor (not on the wall)
     } else if (this.onFloor()) {
+      this.jumpTimer = this.game.time.time;
+      this.jumpSound.play();
       this.body.velocity.y = -210;
       this.currentState = this.airState;
       this.dropDust(x);
@@ -251,7 +262,7 @@ MinerGame.Player.prototype.moveX = function() {
 MinerGame.Player.prototype.onFloor = function() {
   if (this.body.onFloor()) {
     this.groundCheck = true;
-    this.game.time.events.add(125, function() {
+    this.game.time.events.add(275, function() {
       this.groundCheck = false;
     }, this);
   }

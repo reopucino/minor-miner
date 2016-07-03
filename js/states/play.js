@@ -10,6 +10,19 @@ MinerGame.playState = function(){};
 
 MinerGame.playState.prototype = {
   create: function() {
+    // play music
+    if (!MinerGame.currentTrack) {
+      MinerGame.currentTrack = this.game.add.audio('field1');
+      MinerGame.currentTrack.loopFull();
+    }
+
+    // init sfx
+    this.playerDieSound = this.add.audio('player_die');
+    this.playerDieSound.volume -= .5;
+    this.portalSound = this.add.audio('start_game');
+    this.portalSound.volume -= .5;
+    this.secretSound = this.add.audio('secret');
+    this.secretSound.volume -= .5;
 
     // init the tile map
     this.map = this.game.add.tilemap(MinerGame.level);
@@ -124,6 +137,8 @@ MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
   // save secrets collected
   MinerGame.secrets += player.secrets;
   console.log('secrets collected: ' + MinerGame.secrets);
+  // play warp sound
+  this.portalSound.play();
   // add player warp sprite
   var playerWarp = this.game.add.sprite(player.x, player.y, 'player-warp');
   playerWarp.anchor.setTo(0.5, 0.5);
@@ -145,6 +160,8 @@ MinerGame.playState.prototype.playerSecretHandler = function(player, secret) {
   // increment secrets (saves at end of level, resets if player dies)
   player.secrets++;
   this.updateSecretText(MinerGame.secrets + player.secrets);
+  // play secret sound
+  this.secretSound.play();
   // pink particles
   var splash = this.game.add.emitter(secret.x + (secret.width / 2), secret.y + (secret.height / 2), 200);
   splash.makeParticles('secret-particle');
@@ -167,6 +184,9 @@ MinerGame.playState.prototype.playerTrapHandler = function(player, trap) {
 
   // shake camera
   this.startCameraShake();
+
+  // play death sound
+  this.playerDieSound.play();
 
   // start lava splash
   MinerGame.lavaSplash.x = player.x;

@@ -5,6 +5,10 @@ MinerGame.menuState = function(){};
 
 MinerGame.menuState.prototype = {
   create: function() {
+    // play music
+    var music = this.game.add.audio('intro');
+    music.loopFull(0.8);
+
     // create background
     this.map = this.game.add.tilemap('menu');
     this.map.addTilesetImage('lavaTiles', 'tiles');
@@ -35,7 +39,8 @@ MinerGame.menuState.prototype = {
 
 
     // create logo
-
+    var titleText = this.game.add.bitmapText(this.game.world.centerX, this.game.world.centerY, 'carrier_command', 'MINOR MINER', 32);
+    titleText.anchor.setTo(0.5, 0.5);
 
     // create menu text
     var startText = this.game.add.bitmapText(this.game.world.centerX, this.game.height - 150, 'carrier_command', 'PRESS \'X\' TO START', 8);
@@ -44,6 +49,10 @@ MinerGame.menuState.prototype = {
     // start button
     var startKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
     startKey.onDown.add(function() {
+      music.stop();
+      var startSound = this.add.audio('start_game');
+      startSound.volume -= .5;
+      startSound.play();
       // menu text fade in and out for 1.5 sec
       var startTween = this.game.add.tween(startText).to({ alpha: 0 }, 100, "Linear", true, 0, -1, true);
       // after 1.5 sec, transition to next state

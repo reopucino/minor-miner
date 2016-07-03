@@ -30,6 +30,14 @@ MinerGame.preloadState.prototype = {
     this.load.spritesheet('portal', 'assets/img/portal.png', 16, 16);
     this.load.spritesheet('secret', 'assets/img/secret.png', 16, 16);
     this.load.image('secret-particle', 'assets/img/secret-particle.png');
+
+    // load audio assets
+    this.load.audio('intro', 'assets/audio/intro.mp3');
+    this.load.audio('start_game', 'assets/audio/start_game.wav');
+    this.load.audio('field1', 'assets/audio/field1.mp3');
+    this.load.audio('jump', 'assets/audio/jump.wav');
+    this.load.audio('player_die', 'assets/audio/player_die.wav');
+    this.load.audio('secret', 'assets/audio/secret.wav');
   },
   create: function() {
     this.state.start('menu');
