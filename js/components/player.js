@@ -65,7 +65,7 @@ MinerGame.Player = function(game, x, y) {
   this.jumpBtn.onDown.add(function() {
     // if player is dead, or if player has already jumped, return
 
-    if (!this.body || this.spawning || this.jumpTimer > this.game.time.time - 280) {
+    if (!this.body || this.spawning || this.jumpTimer > this.game.time.time - 230) {
       console.log('stopped extra jump');
       return;
     }
