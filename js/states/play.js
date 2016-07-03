@@ -25,10 +25,6 @@ MinerGame.playState.prototype = {
     this.secretSound.volume -= .5;
 
     // init the tile map
-    if (MinerGame.level === 'end') {
-      MinerGame.level = 1;
-      this.game.state.start('thanks');
-    }
     this.map = this.game.add.tilemap(MinerGame.level);
     this.map.addTilesetImage('stageTiles', 'tiles');
 
@@ -154,7 +150,12 @@ MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
     MinerGame.level = portal.targetTilemap;
     MinerGame.lavaParticles = null;
     MinerGame.lavaSplash = null;
-    this.game.state.start(this.game.state.current);
+    if (MinerGame.level === 'end') {
+      MinerGame.level = 1;
+      this.game.state.start('thanks');
+    } else {
+      this.game.state.start(this.game.state.current);
+    }
   }, this);
 };
 

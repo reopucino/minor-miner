@@ -16,6 +16,7 @@ MinerGame.thanksState.prototype = {
     startKey.onDown.add(function() {
       if (MinerGame.currentTrack) {
         MinerGame.currentTrack.stop();
+        MinerGame.currentTrack = null;
       }
       var startSound = this.add.audio('start_game');
       startSound.volume -= .5;
