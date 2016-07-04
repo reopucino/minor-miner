@@ -5,11 +5,16 @@ MinerGame.thanksState = function(){};
 
 MinerGame.thanksState.prototype = {
   create: function() {
+    // thanks text
     this.game.add.bitmapText(this.game.world.centerX, this.game.world.centerY, 'carrier_command', 'THANKS FOR PLAYING THE DEMO\n\nPLEASE SEND FEEDBACK TO ALEX\n\nr.alex.morris.3@gmail.com\n\n@ramorris_3\n\nhttp://ralexmorris.com/blog', 12).anchor.setTo(0.5, 0.5);
 
     // create menu text
     var startText = this.game.add.bitmapText(this.game.world.centerX, this.game.height - 150, 'carrier_command', 'PRESS \'X\' TO RESTART', 12);
     startText.anchor.setTo(0.5, 0.5);
+
+    // credit text
+    this.game.add.bitmapText(14, this.game.height - 12, 'carrier_command', 'art by @ansimuz', 8).anchor.setTo(0,1);
+    this.game.add.bitmapText(this.game.width - 12, this.game.height - 12, 'carrier_command', 'music by @ericskiff', 8).anchor.setTo(1, 1);
 
     // start button
     var startKey = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
