@@ -56,7 +56,7 @@ MinerGame.Player = function(game, x, y) {
   this.body.drag.x = 1700;
   this.wallCheck = false; // for custom wall check
   this.wasOnGround = true; // for custom ground check
-  this.groundDelay = 40;
+  this.groundDelay = 40; // player can jump up to 40 ms after leaving ground
 
   // move player with cursor keys, jump with x
   this.cursors = this.game.input.keyboard.createCursorKeys();
