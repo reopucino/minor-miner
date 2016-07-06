@@ -1,6 +1,6 @@
 var MinerGame = MinerGame || {};
 
-MinerGame.level = '1';
+MinerGame.level = '5';
 MinerGame.secrets = 0;
 MinerGame.totalSecrets = 4;
 MinerGame.startTime = MinerGame.startTime || 0;
@@ -121,11 +121,11 @@ MinerGame.playState.prototype = {
 
     // timer
     this.updateTimerText();
+  },
+  // debugging
+  render: function() {
+    this.game.debug.body(this.player);
   }
-  // // debugging
-  // render: function() {
-  //   this.game.debug.body(this.player);
-  // }
 };
 
 // COLLISION HANDLERS //

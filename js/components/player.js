@@ -55,8 +55,8 @@ MinerGame.Player = function(game, x, y) {
   this.body.acceleration.x = 0;
   this.body.drag.x = 1700;
   this.wallCheck = false; // for custom wall check
-  this.groundCheck = false; // for custom ground check
-  this.jumpTimer = 0;
+  this.wasOnGround = true; // for custom ground check
+  this.groundDelay = 40;
 
   // move player with cursor keys, jump with x
   this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -66,15 +66,15 @@ MinerGame.Player = function(game, x, y) {
   this.jumpBtn.onDown.add(function() {
     // if player is dead, or if player has already jumped, return
 
-    if (!this.body || this.spawning || this.jumpTimer > this.game.time.time - 230) {
+    if (!this.body || this.spawning) {
       console.log('stopped extra jump');
       return;
     }
 
     var x;
     // if on the wall
-    if (this.onWall() && !this.onFloor()) {
-      this.jumpTimer = this.game.time.time;
+    if (this.body.onWall() && !this.body.onFloor()) {
+      this.wasOnGround = false;
       this.jumpSound.play();
       this.body.maxVelocity.y = this.maxFallSpeed;
       this.body.velocity.y = -220;
@@ -96,8 +96,8 @@ MinerGame.Player = function(game, x, y) {
       }
       this.currentState = this.airState;
     // if on the floor (not on the wall)
-    } else if (this.onFloor()) {
-      this.jumpTimer = this.game.time.time;
+    } else if (this.body.onFloor() || this.wasOnGround) {
+      this.wasOnGround = false;
       this.jumpSound.play();
       this.body.velocity.y = -210;
       this.currentState = this.airState;
@@ -137,6 +137,9 @@ MinerGame.Player.prototype.update = function() {
 
 // STATES //
 MinerGame.Player.prototype.groundState = function() {
+  // delayed "onGround" check for better controls
+  this.wasOnGround = true;
+
   // moving left or right
   this.moveX();
 
@@ -169,12 +172,19 @@ MinerGame.Player.prototype.groundState = function() {
   }
 
   // fell off a ledge
-  if (!this.onFloor()) {
+  if (!this.body.onFloor()) {
     this.currentState = this.airState;
   }
 };
 
 MinerGame.Player.prototype.airState = function() {
+  // delayed "onGround" check for better controls
+  if (this.wasOnGround) {
+    this.game.time.events.add(this.groundDelay, function() {
+      this.wasOnGround = false;
+    }, this);
+  }
+
   // moving left or right
   this.moveX();
 
@@ -185,22 +195,13 @@ MinerGame.Player.prototype.airState = function() {
     this.frame = 4;
   }
 
-  // "float" if player is holding jump button at top of arc
-  if (this.body.velocity.y <= 25 && this.body.velocity.y > 0 && this.jumpBtn.isDown) {
-    // halve gravity
-    this.body.gravity.y = 250;
-  } else {
-    this.body.gravity.y = 500;
-  }
-
   // wall sliding (pre wall-jump)
-  if (this.onWall()) {
+  if (this.body.onWall()) {
     this.currentState = this.wallSlideState;
   }
 
   // hit the ground
-  if (this.onFloor()) {
-    this.body.gravity.y = 500;
+  if (this.body.onFloor()) {
     this.currentState = this.groundState;
     this.dropDust();
   }
@@ -208,7 +209,9 @@ MinerGame.Player.prototype.airState = function() {
 
 MinerGame.Player.prototype.wallSlideState = function() {
   // slide more slowly
-  this.body.maxVelocity.y = this.maxFallSpeed / 3;
+  if (this.body.velocity.y >= this.maxFallSpeed / 3) {
+    this.body.velocity.y = this.maxFallSpeed / 3;
+  }
 
   // animate
   this.animations.stop();
@@ -231,13 +234,13 @@ MinerGame.Player.prototype.wallSlideState = function() {
   }
 
   // let go of the wall
-  if (!this.onWall()) {
+  if (!this.body.onWall()) {
     this.body.maxVelocity.y = this.maxFallSpeed;
     this.currentState = this.airState;
   }
 
   // hit the floor
-  if (this.onFloor()) {
+  if (this.body.onFloor()) {
     this.body.maxVelocity.y = this.maxFallSpeed;
     this.currentState = this.groundState;
     this.dropDust();
@@ -251,37 +254,17 @@ MinerGame.Player.prototype.moveX = function() {
     this.facing = 'left';
     this.body.acceleration.x = -this.accelConst;
     // less acceleration if in air
-    if (!this.onFloor()) {
+    if (!this.body.onFloor()) {
       this.body.acceleration.x = -this.accelConst / 2;
     }
   } else if (this.cursors.right.isDown) {
     this.facing = 'right';
     this.body.acceleration.x = this.accelConst;
     // less acceleration if in air
-    if (!this.onFloor()) {
+    if (!this.body.onFloor()) {
       this.body.acceleration.x = this.accelConst / 2;
     }
   } else {
     this.body.acceleration.x = 0;
   }
-};
-
-MinerGame.Player.prototype.onFloor = function() {
-  if (this.body.onFloor()) {
-    this.groundCheck = true;
-    this.game.time.events.add(275, function() {
-      this.groundCheck = false;
-    }, this);
-  }
-  return this.groundCheck;
-}
-
-MinerGame.Player.prototype.onWall = function() {
-  if (this.body.onWall()) {
-    this.wallCheck = true;
-    this.game.time.events.add(125, function() {
-      this.wallCheck = false;
-    }, this);
-  }
-  return this.wallCheck;
 };
