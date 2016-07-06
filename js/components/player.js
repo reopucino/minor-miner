@@ -49,10 +49,11 @@ MinerGame.Player = function(game, x, y) {
   this.body.setSize(8, 12, 4, 4);
   this.body.gravity.y = 500;
   this.body.maxVelocity.x = 260;
-  this.body.maxVelocity.y = 290;
+  this.maxFallSpeed = 290;
+  this.body.maxVelocity.y = this.maxFallSpeed;
   this.accelConst = 1800;
   this.body.acceleration.x = 0;
-  this.body.drag.x = 1400;
+  this.body.drag.x = 1700;
   this.wallCheck = false; // for custom wall check
   this.groundCheck = false; // for custom ground check
   this.jumpTimer = 0;
@@ -75,6 +76,7 @@ MinerGame.Player = function(game, x, y) {
     if (this.onWall() && !this.onFloor()) {
       this.jumpTimer = this.game.time.time;
       this.jumpSound.play();
+      this.body.maxVelocity.y = this.maxFallSpeed;
       this.body.velocity.y = -220;
       // jump away from wall
       if (this.facing === 'left') {
@@ -205,6 +207,9 @@ MinerGame.Player.prototype.airState = function() {
 };
 
 MinerGame.Player.prototype.wallSlideState = function() {
+  // slide more slowly
+  this.body.maxVelocity.y = this.maxFallSpeed / 3;
+
   // animate
   this.animations.stop();
   if (this.facing === 'left') {
@@ -227,11 +232,13 @@ MinerGame.Player.prototype.wallSlideState = function() {
 
   // let go of the wall
   if (!this.onWall()) {
+    this.body.maxVelocity.y = this.maxFallSpeed;
     this.currentState = this.airState;
   }
 
   // hit the floor
   if (this.onFloor()) {
+    this.body.maxVelocity.y = this.maxFallSpeed;
     this.currentState = this.groundState;
     this.dropDust();
   }
