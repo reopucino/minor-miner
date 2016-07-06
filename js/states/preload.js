@@ -20,6 +20,8 @@ MinerGame.preloadState.prototype = {
     this.load.tilemap('3', 'assets/tilemaps/3.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.tilemap('4', 'assets/tilemaps/4.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.tilemap('5', 'assets/tilemaps/5.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('6', 'assets/tilemaps/6.json', null, Phaser.Tilemap.TILED_JSON);
+
     // load tiles/sprites/images
     this.load.image('tiles', 'assets/img/tiles.png');
     this.load.spritesheet('player', 'assets/img/player.png', 16, 16, 16);
