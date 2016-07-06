@@ -57,7 +57,8 @@ MinerGame.menuState.prototype = {
       var startTween = this.game.add.tween(startText).to({ alpha: 0 }, 100, "Linear", true, 0, -1, true);
       // after 1.5 sec, transition to next state
       this.game.time.events.add(700, function() {
-          this.game.state.start('play');
+        MinerGame.startTime = this.game.time.totalElapsedSeconds();
+        this.game.state.start('play');
       }, this);
     }, this);
   },
