@@ -27,7 +27,7 @@ MinerGame.Player = function(game, x, y) {
     var dust = this.game.add.sprite(0, 0, 'dust');
     this.game.physics.arcade.enable(dust);
     dust.animations.add('float');
-    dust.anchor.setTo(0.5);
+    dust.anchor.setTo(0.5, 1);
     dust.checkWorldBounds = true;
     dust.outOfBoundsKill = true;
     dust.exists = false;
@@ -101,7 +101,7 @@ MinerGame.Player = function(game, x, y) {
       this.jumpSound.play();
       this.body.velocity.y = -210;
       this.currentState = this.airState;
-      this.dropDust(x);
+      this.dropDust();
     }
   }, this);
 
@@ -121,6 +121,7 @@ MinerGame.Player = function(game, x, y) {
 
   // add to the game
   this.game.add.existing(this);
+  this.game.layers.player.add(this);
 
 };
 
@@ -160,14 +161,6 @@ MinerGame.Player.prototype.groundState = function() {
       this.frame = 14;
     } else {
       this.frame = 5;
-    }
-
-    // if not completely motionless - "sliding"
-    if (Math.abs(this.body.velocity.x)) {
-      if (this.game.time.time > this.dustTimer + 30) {
-        this.dropDust();
-        this.dustTimer = this.game.time.time;
-      }
     }
   }
 

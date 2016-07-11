@@ -26,7 +26,7 @@ MinerGame.preloadState.prototype = {
     // load tiles/sprites/images
     this.load.image('tiles', 'assets/img/tiles.png');
     this.load.spritesheet('player', 'assets/img/player.png', 16, 16, 16);
-    this.load.spritesheet('dust', 'assets/img/dust.png', 10, 3);
+    this.load.spritesheet('dust', 'assets/img/dust.png', 8, 8);
     this.load.image('particle', 'assets/img/particle.png');
     this.load.spritesheet('player-warp', 'assets/img/player-warp.png', 24, 24);
     this.load.image('item-gun', 'assets/img/item-gun.png');
