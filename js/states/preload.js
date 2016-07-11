@@ -33,6 +33,7 @@ MinerGame.preloadState.prototype = {
     this.load.spritesheet('portal', 'assets/img/portal.png', 16, 16);
     this.load.spritesheet('secret', 'assets/img/secret.png', 16, 16);
     this.load.image('secret-particle', 'assets/img/secret-particle.png');
+    this.load.spritesheet('block-dust', 'assets/img/block-dust.png', 16, 16);
 
     // load audio assets
     this.load.audio('intro', 'assets/audio/intro.mp3');

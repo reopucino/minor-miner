@@ -209,8 +209,8 @@ MinerGame.Player.prototype.airState = function() {
 
 MinerGame.Player.prototype.wallSlideState = function() {
   // slide more slowly
-  if (this.body.velocity.y >= this.maxFallSpeed / 3) {
-    this.body.velocity.y = this.maxFallSpeed / 3;
+  if (this.body.velocity.y >= this.maxFallSpeed / 2) {
+    this.body.velocity.y = this.maxFallSpeed / 2;
   }
 
   // animate

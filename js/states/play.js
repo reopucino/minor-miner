@@ -32,12 +32,12 @@ MinerGame.playState.prototype = {
     this.backgroundLayer = this.map.createLayer('backgroundLayer');
     this.stageLayer = this.map.createLayer('stageLayer');
     this.trapsLayer = this.map.createLayer('trapsLayer');
+    this.fragileLayer = this.map.createLayer('fragileLayer');
 
-    // set collisions on stageLayer
+    // set collisions on stageLayer, trapsLayer, and fragileLayer
     this.map.setCollisionBetween(1, 2000, true, 'stageLayer');
-
-    // set collisions on trapsLayer
     this.map.setCollisionBetween(1, 2000, true, 'trapsLayer');
+    this.map.setCollisionBetween(1, 2000, true, 'fragileLayer');
 
     // resize game world to match layer dimensions
     this.backgroundLayer.resizeWorld();
@@ -45,7 +45,7 @@ MinerGame.playState.prototype = {
     // create items on the stage
     this.createItems(); // powerups
     this.createPortal(); // end of level portal
-    this.createSecrets();
+    this.createSecrets(); // collectibles
 
     // actor rendering layers
     this.game.layers = {
@@ -54,6 +54,16 @@ MinerGame.playState.prototype = {
       effects: this.game.add.group(), // bullets and dust
       ui: this.game.add.group()
     };
+
+    // create block dust effects
+    this.blockDust = this.game.add.group();
+    this.game.layers.effects.add(this.blockDust); // add to rendering layer
+    for (var i = 0; i < 50; i++) {
+      var dust = this.game.add.sprite(0, 0, 'block-dust');
+      dust.animations.add('burst');
+      dust.kill();
+      this.blockDust.add(dust);
+    }
 
     //create player
     var objects = this.findObjectsByType('playerStart', this.map, 'objectsLayer');
@@ -111,6 +121,9 @@ MinerGame.playState.prototype = {
     this.game.physics.arcade.collide(this.player, this.stageLayer);
     // traps collisions
     this.game.physics.arcade.collide(this.player, this.trapsLayer, this.playerTrapHandler, null, this);
+    // collision with fragile blocks
+    this.game.physics.arcade.collide(this.player,
+    this.fragileLayer, this.playerFragileHandler, null, this);
     // portal to next level
     this.game.physics.arcade.collide(this.player, this.portals, this.playerPortalHandler, null, this);
     // secret collectible
@@ -207,8 +220,23 @@ MinerGame.playState.prototype.playerTrapHandler = function(player, trap) {
     this.world.remove(MinerGame.lavaSplash);
     this.game.state.start(this.game.state.current);
   }, this);
+};
 
-
+MinerGame.playState.prototype.playerFragileHandler = function(player, block) {
+  // block disappears after .5 seconds
+  this.game.time.events.add(250, function() {
+    // make block dust
+    var dust = this.blockDust.getFirstDead();
+    dust.reset(block.worldX, block.worldY);
+    dust.animations.play('burst', 20, false, true);
+    // store block index so we can replace it later
+    var index = block.index;
+    this.map.removeTile(block.x, block.y, 'fragileLayer');
+    // replace block 1.5s after it disappears
+    this.game.time.events.add(1500, function() {
+      this.map.putTile(index, block.x, block.y, 'fragileLayer');
+    }, this);
+  }, this);
 };
 
 // GAMEPLAY STATE UTILITIES //
