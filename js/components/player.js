@@ -11,9 +11,9 @@ MinerGame.Player = function(game, x, y) {
   this.jumpSound = this.game.add.audio('jump');
   this.jumpSound.volume -= .6;
   this.footstepSound = this.game.add.audio('footstep');
-  this.footstepSound.volume -= .85;
-  this.wallslideSound = this.game.add.audio('wallslide');
-  this.wallslideSound.volume -= .55;
+  this.footstepSound.volume -= .55;
+  this.dustSound = this.game.add.audio('dust');
+  this.dustSound.volume -= .4;
 
   // secrets and upgrades
   this.secrets = 0;
@@ -38,11 +38,12 @@ MinerGame.Player = function(game, x, y) {
     this.dustGroup.add(dust);
   }
   var player = this;
-  this.dropDust = function(x, y) {
-    x = x || player.x;
-    y = y || player.bottom;
+  this.dropDust = function() {
     var dust = player.dustGroup.getFirstExists(false);
-    dust.reset(x, y);
+    dust.reset(player.x, player.bottom);
+    if (!this.dustSound.isPlaying || this.body.onWall()) {
+      this.dustSound.play();
+    }
     dust.animations.play('float', 10, false, true);
     dust.body.velocity.y = -10;
   };
@@ -61,7 +62,7 @@ MinerGame.Player = function(game, x, y) {
   this.body.drag.x = 2000;
   this.wallCheck = false; // for custom wall check
   this.wasOnGround = true; // for custom ground check
-  this.groundDelay = 40; // player can jump up to 40 ms after leaving ground
+  this.groundDelay = 80; // player can jump up to 40 ms after leaving ground
 
   // move player with cursor keys, jump with x
   this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -153,7 +154,9 @@ MinerGame.Player.prototype.groundState = function() {
   // play footstep sound
   // if foot down, play sound
   if (this.frame === 0 || this.frame === 2 || this.frame === 9 || this.frame === 11) {
-    this.footstepSound.play();
+    if (!this.footstepSound.isPlaying) {
+      this.footstepSound.play();
+    }
   }
 
   // stop running animation if stopped
@@ -219,8 +222,6 @@ MinerGame.Player.prototype.wallSlideState = function() {
 
   // dust
   if (this.game.time.time > this.dustTimer + 40 && this.body.velocity.y >= 50) {
-    // play wallslide sound
-    this.wallslideSound.play();
     // make dust
     this.dropDust();
     this.dustTimer = this.game.time.time;
