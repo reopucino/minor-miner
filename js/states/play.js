@@ -10,6 +10,7 @@ MinerGame.playState = function(){};
 
 MinerGame.playState.prototype = {
   create: function() {
+
     // play music
     if (!MinerGame.currentTrack) {
       MinerGame.currentTrack = this.game.add.audio('field1');
@@ -116,6 +117,11 @@ MinerGame.playState.prototype = {
     var time = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
     this.timerText = this.game.add.bitmapText(14, this.game.height - 12, 'carrier_command', 'time: ' + time, 8);
     this.timerText.anchor.setTo(0, 1);
+
+    // tutorial text
+    if (MinerGame.level === '1') {
+        this.game.add.bitmapText(this.game.width - 14, this.game.height - 12, 'carrier_command', 'use arrows to move, press \'x\' to jump', 8).anchor.setTo(1, 1);
+    }
   },
   update: function() {
     // stage collisions
