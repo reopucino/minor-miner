@@ -196,13 +196,14 @@ MinerGame.playState.prototype.playerSecretHandler = function(player, secret) {
   // pink particles
   var splash = this.game.add.emitter(secret.x + (secret.width / 2), secret.y + (secret.height / 2), 500);
   splash.makeParticles('secret-particle');
-  // splash.minRotation = 0;
-  // splash.maxRotation = 0;
+  splash.minRotation = 0;
+  splash.maxRotation = 0;
   splash.minParticleScale = 0.2;
   splash.maxParticleScale = 1.5;
-  splash.setYSpeed(150, -150);
+  splash.setYSpeed(350, -350);
+  splash.setXSpeed(350, -350);
   splash.gravity = 0;
-  splash.start(false, 500, 5);
+  splash.start(false, 1500, 5);
   this.game.time.events.add(700, function() {
     splash.on = false;
   });
