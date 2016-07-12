@@ -9,8 +9,8 @@
  <tileset firstgid="77" name="itemsTiles" tilewidth="16" tileheight="16" tilecount="16" columns="4">
   <image source="../assets/img/items.png" width="64" height="64"/>
  </tileset>
- <tileset firstgid="93" name="secret" tilewidth="16" tileheight="16" tilecount="3" columns="3">
-  <image source="../assets/img/secret.png" width="48" height="16"/>
+ <tileset firstgid="93" name="secret" tilewidth="16" tileheight="16" tilecount="6" columns="6">
+  <image source="../assets/img/secret.png" width="96" height="16"/>
  </tileset>
  <layer name="backgroundLayer" width="40" height="30">
   <data encoding="csv">

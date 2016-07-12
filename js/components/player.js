@@ -10,6 +10,8 @@ MinerGame.Player = function(game, x, y) {
   // sounds
   this.jumpSound = this.game.add.audio('jump');
   this.jumpSound.volume -= .6;
+  this.rocketSound = this.game.add.audio('rocket');
+  this.rocketSound.volume -= .5;
   this.footstepSound = this.game.add.audio('footstep');
   this.footstepSound.volume -= .55;
   this.dustSound = this.game.add.audio('dust');
@@ -38,10 +40,10 @@ MinerGame.Player = function(game, x, y) {
     this.dustGroup.add(dust);
   }
   var player = this;
-  this.dropDust = function() {
+  this.dropDust = function(repeated) {
     var dust = player.dustGroup.getFirstExists(false);
     dust.reset(player.x, player.bottom);
-    if (!this.dustSound.isPlaying || this.body.onWall()) {
+    if (!this.dustSound.isPlaying || repeated) {
       this.dustSound.play();
     }
     dust.animations.play('float', 10, false, true);
@@ -54,6 +56,9 @@ MinerGame.Player = function(game, x, y) {
   this.body.setSize(8, 12, 4, 4);
   this.body.gravity.y = 350;
   this.jumpSpeed = -200;
+  this.canAirJump = true;
+  this.rocketDuration = 250;
+  this.rocketClock = 0;
   this.body.maxVelocity.x = 190;
   this.maxFallSpeed = 500;
   this.body.maxVelocity.y = this.maxFallSpeed;
@@ -71,7 +76,6 @@ MinerGame.Player = function(game, x, y) {
   // jump button handler
   this.jumpBtn.onDown.add(function() {
     // if player is dead, or if player has already jumped, return
-
     if (!this.body || this.spawning) {
       console.log('stopped extra jump');
       return;
@@ -100,6 +104,14 @@ MinerGame.Player = function(game, x, y) {
       this.body.velocity.y = this.jumpSpeed;
       this.currentState = this.airState;
       this.dropDust();
+    // in the air
+    } else {
+      if (this.canAirJump) {
+        this.canAirJump = false;
+        this.currentState = this.rocketState;
+        this.rocketSound.play();
+        this.rocketClock = this.game.time.time;
+      }
     }
   }, this);
 
@@ -138,6 +150,8 @@ MinerGame.Player.prototype.update = function() {
 MinerGame.Player.prototype.groundState = function() {
   // delayed "onGround" check for better controls
   this.wasOnGround = true;
+  // reset airjump flag
+  this.canAirJump = true;
 
   // moving left or right
   this.moveX();
@@ -223,7 +237,7 @@ MinerGame.Player.prototype.wallSlideState = function() {
   // dust
   if (this.game.time.time > this.dustTimer + 40 && this.body.velocity.y >= 50) {
     // make dust
-    this.dropDust();
+    this.dropDust(true);
     this.dustTimer = this.game.time.time;
   }
 
@@ -238,6 +252,40 @@ MinerGame.Player.prototype.wallSlideState = function() {
     this.body.maxVelocity.y = this.maxFallSpeed;
     this.currentState = this.groundState;
     this.dropDust();
+  }
+};
+
+MinerGame.Player.prototype.rocketState = function() {
+  // gain speed for this.rocketDuration
+  if (this.game.time.time - this.rocketClock <= this.rocketDuration) {
+    this.body.velocity.y = this.jumpSpeed;
+  }
+
+  // still rocketing straight up
+  this.body.velocity.x = 0;
+
+  // shake the player sprite
+  var offset = Math.random() - 0.4;
+  offset = offset < 0.3 ? 0.3 : offset;
+  offest = offset > 0.6 ? 0.6 : offset;
+  this.anchor.x = offset;
+  // make dust trail
+  if (this.game.time.time > this.dustTimer + 40) {
+    this.dropDust(true);
+    this.dustTimer = this.game.time.time;
+  }
+
+  // animate rocketing up
+  this.animations.stop();
+  if (this.facing === 'right') {
+    this.frame = 7;
+  } else {
+    this.frame = 12;
+  }
+
+  // at peak of jump, go back to normal air state
+  if (this.body.velocity.y >= -150){
+    this.currentState = this.airState;
   }
 };
 

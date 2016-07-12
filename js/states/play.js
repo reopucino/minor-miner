@@ -1,6 +1,6 @@
 var MinerGame = MinerGame || {};
 
-MinerGame.level = '1';
+MinerGame.level = '2';
 MinerGame.secrets = 0;
 MinerGame.totalSecrets = 4;
 MinerGame.startTime = MinerGame.startTime || 0;
@@ -122,6 +122,12 @@ MinerGame.playState.prototype = {
     if (MinerGame.level === '1') {
         this.game.add.bitmapText(this.game.width - 14, this.game.height - 12, 'carrier_command', 'use arrows to move, press \'x\' to jump', 8).anchor.setTo(1, 1);
     }
+
+    // restart level button
+    // this.restartBtn = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
+    // this.restartBtn.onDown.add(function() {
+    //   this.playerTrapHandler(this.player);
+    // }, this);
   },
   update: function() {
     // stage collisions
@@ -188,15 +194,15 @@ MinerGame.playState.prototype.playerSecretHandler = function(player, secret) {
   // play secret sound
   this.secretSound.play();
   // pink particles
-  var splash = this.game.add.emitter(secret.x + (secret.width / 2), secret.y + (secret.height / 2), 200);
+  var splash = this.game.add.emitter(secret.x + (secret.width / 2), secret.y + (secret.height / 2), 500);
   splash.makeParticles('secret-particle');
-  splash.minRotation = 0;
-  splash.maxRotation = 0;
-  splash.minParticleScale = 0.3;
+  // splash.minRotation = 0;
+  // splash.maxRotation = 0;
+  splash.minParticleScale = 0.2;
   splash.maxParticleScale = 1.5;
   splash.setYSpeed(150, -150);
-  splash.gravity = 500;
-  splash.start(false, 5000, 20);
+  splash.gravity = 0;
+  splash.start(false, 500, 5);
   this.game.time.events.add(700, function() {
     splash.on = false;
   });
