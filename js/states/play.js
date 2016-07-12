@@ -13,16 +13,17 @@ MinerGame.playState.prototype = {
     // play music
     if (!MinerGame.currentTrack) {
       MinerGame.currentTrack = this.game.add.audio('field1');
+      MinerGame.currentTrack.volume -= .3;
       MinerGame.currentTrack.loopFull();
     }
 
     // init sfx
     this.playerDieSound = this.add.audio('player_die');
-    this.playerDieSound.volume -= .5;
+    this.playerDieSound.volume -= .7;
     this.portalSound = this.add.audio('start_game');
-    this.portalSound.volume -= .5;
+    this.portalSound.volume -= .6;
     this.secretSound = this.add.audio('secret');
-    this.secretSound.volume -= .5;
+    this.secretSound.volume -= .6;
 
     // init the tile map
     this.map = this.game.add.tilemap(MinerGame.level);

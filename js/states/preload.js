@@ -42,6 +42,8 @@ MinerGame.preloadState.prototype = {
     this.load.audio('jump', 'assets/audio/jump.wav');
     this.load.audio('player_die', 'assets/audio/player_die.wav');
     this.load.audio('secret', 'assets/audio/secret.wav');
+    this.load.audio('footstep', 'assets/audio/footstep.wav');
+    this.load.audio('wallslide', 'assets/audio/wallslide.wav');
   },
   create: function() {
     this.state.start('menu');

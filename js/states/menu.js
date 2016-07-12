@@ -51,7 +51,7 @@ MinerGame.menuState.prototype = {
     startKey.onDown.add(function() {
       music.stop();
       var startSound = this.add.audio('start_game');
-      startSound.volume -= .5;
+      startSound.volume -= .6;
       startSound.play();
       // menu text fade in and out for 1.5 sec
       var startTween = this.game.add.tween(startText).to({ alpha: 0 }, 100, "Linear", true, 0, -1, true);

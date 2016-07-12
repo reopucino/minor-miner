@@ -9,7 +9,11 @@ MinerGame.Player = function(game, x, y) {
 
   // sounds
   this.jumpSound = this.game.add.audio('jump');
-  this.jumpSound.volume -= .5;
+  this.jumpSound.volume -= .6;
+  this.footstepSound = this.game.add.audio('footstep');
+  this.footstepSound.volume -= .85;
+  this.wallslideSound = this.game.add.audio('wallslide');
+  this.wallslideSound.volume -= .55;
 
   // secrets and upgrades
   this.secrets = 0;
@@ -47,13 +51,14 @@ MinerGame.Player = function(game, x, y) {
   this.game.physics.arcade.enable(this);
   this.body.collideWorldBounds = true;
   this.body.setSize(8, 12, 4, 4);
-  this.body.gravity.y = 500;
-  this.body.maxVelocity.x = 260;
-  this.maxFallSpeed = 290;
+  this.body.gravity.y = 350;
+  this.jumpSpeed = -200;
+  this.body.maxVelocity.x = 190;
+  this.maxFallSpeed = 500;
   this.body.maxVelocity.y = this.maxFallSpeed;
   this.accelConst = 1800;
   this.body.acceleration.x = 0;
-  this.body.drag.x = 1700;
+  this.body.drag.x = 2000;
   this.wallCheck = false; // for custom wall check
   this.wasOnGround = true; // for custom ground check
   this.groundDelay = 40; // player can jump up to 40 ms after leaving ground
@@ -71,35 +76,27 @@ MinerGame.Player = function(game, x, y) {
       return;
     }
 
-    var x;
     // if on the wall
     if (this.body.onWall() && !this.body.onFloor()) {
       this.wasOnGround = false;
       this.jumpSound.play();
       this.body.maxVelocity.y = this.maxFallSpeed;
-      this.body.velocity.y = -220;
+      this.body.velocity.y = this.jumpSpeed;
       // jump away from wall
       if (this.facing === 'left') {
-        this.body.velocity.x = this.body.maxVelocity.x - 80;
+        this.body.velocity.x = this.body.maxVelocity.x;
       } else {
-        this.body.velocity.x = -this.body.maxVelocity.x + 80;
+        this.body.velocity.x = -this.body.maxVelocity.x;
       }
       // make dust on the wall
-      for (var i = 0; i < 3; i++) {
-        // left or right, depending on player.facing
-        if (this.facing === 'left') {
-          x = this.left + 5;
-        } else {
-          x = this.right - 5;
-        }
-        this.dropDust(x, this.bottom);
-      }
+      this.dropDust();
+      // change state to air state
       this.currentState = this.airState;
     // if on the floor (not on the wall)
     } else if (this.body.onFloor() || this.wasOnGround) {
       this.wasOnGround = false;
       this.jumpSound.play();
-      this.body.velocity.y = -210;
+      this.body.velocity.y = this.jumpSpeed;
       this.currentState = this.airState;
       this.dropDust();
     }
@@ -153,8 +150,14 @@ MinerGame.Player.prototype.groundState = function() {
     }
   }
 
-  // stop running animation if stopping
-  if (Math.abs(this.body.velocity.x) <= 125) {
+  // play footstep sound
+  // if foot down, play sound
+  if (this.frame === 0 || this.frame === 2 || this.frame === 9 || this.frame === 11) {
+    this.footstepSound.play();
+  }
+
+  // stop running animation if stopped
+  if (Math.abs(this.body.velocity.x) == 0) {
     // stop running animation
     this.animations.stop();
     if (this.facing === 'left') {
@@ -215,14 +218,11 @@ MinerGame.Player.prototype.wallSlideState = function() {
   }
 
   // dust
-  if (this.game.time.time > this.dustTimer + 40) {
-    // dust on left or right, depending on player.facing
-    if (this.facing === 'left') {
-      x = this.left + 5;
-    } else {
-      x = this.right - 5;
-    }
-    this.dropDust(x, this.bottom);
+  if (this.game.time.time > this.dustTimer + 40 && this.body.velocity.y >= 50) {
+    // play wallslide sound
+    this.wallslideSound.play();
+    // make dust
+    this.dropDust();
     this.dustTimer = this.game.time.time;
   }
 
