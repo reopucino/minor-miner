@@ -247,7 +247,7 @@ MinerGame.Player.prototype.wallSlideState = function() {
   }
 
   // dust
-  if (this.game.time.time > this.dustTimer + 40 && this.body.velocity.y >= 50) {
+  if (this.game.time.time > this.dustTimer + 40 && this.body.velocity.y >= 30) {
     // make dust
     this.dropDust(true);
     this.dustTimer = this.game.time.time;

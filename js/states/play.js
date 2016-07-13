@@ -1,6 +1,6 @@
 var MinerGame = MinerGame || {};
 
-MinerGame.level = '3';
+MinerGame.level = '4';
 MinerGame.secrets = 0;
 MinerGame.totalSecrets = 4;
 MinerGame.startTime = MinerGame.startTime || 0;
