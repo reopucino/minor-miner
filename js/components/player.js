@@ -64,7 +64,8 @@ MinerGame.Player = function(game, x, y) {
   this.body.maxVelocity.y = this.maxFallSpeed;
   this.accelConst = 1800;
   this.body.acceleration.x = 0;
-  this.body.drag.x = 2000;
+  this.dragConst = 2000;
+  this.body.drag.x = this.dragConst;
   this.wallCheck = false; // for custom wall check
   this.wasOnGround = true; // for custom ground check
   this.groundDelay = 80; // player can jump up to 40 ms after leaving ground
@@ -201,6 +202,9 @@ MinerGame.Player.prototype.airState = function() {
   // moving left or right
   this.moveX();
 
+  // reduce friction
+  this.body.drag.x = this.dragConst / 5;
+
   // animate
   if (this.facing === 'left') {
     this.frame = 15;
@@ -210,11 +214,13 @@ MinerGame.Player.prototype.airState = function() {
 
   // wall sliding (pre wall-jump)
   if (this.body.onWall()) {
+    this.body.drag.x = this.dragConst;
     this.currentState = this.wallSlideState;
   }
 
   // hit the ground
   if (this.body.onFloor()) {
+    this.body.drag.x = this.dragConst;
     this.currentState = this.groundState;
     this.dropDust();
   }

@@ -1,6 +1,6 @@
 var MinerGame = MinerGame || {};
 
-MinerGame.level = '2';
+MinerGame.level = '1';
 MinerGame.secrets = 0;
 MinerGame.totalSecrets = 4;
 MinerGame.startTime = MinerGame.startTime || 0;
@@ -199,11 +199,10 @@ MinerGame.playState.prototype.playerSecretHandler = function(player, secret) {
   splash.minRotation = 0;
   splash.maxRotation = 0;
   splash.minParticleScale = 0.2;
-  splash.maxParticleScale = 1.5;
-  splash.setYSpeed(350, -350);
-  splash.setXSpeed(350, -350);
-  splash.gravity = 0;
-  splash.start(false, 1500, 5);
+  splash.maxParticleScale = 1.0;
+  splash.setYSpeed(-150, -50);
+  splash.gravity = 500;
+  splash.start(false, 1000, 5);
   this.game.time.events.add(700, function() {
     splash.on = false;
   });

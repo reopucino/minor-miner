@@ -17,11 +17,11 @@ MinerGame.preloadState.prototype = {
     this.load.tilemap('menu', 'assets/tilemaps/menu.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.tilemap('1', 'assets/tilemaps/1.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.tilemap('2', 'assets/tilemaps/2.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('3', 'assets/tilemaps/3.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('4', 'assets/tilemaps/4.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('5', 'assets/tilemaps/5.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('6', 'assets/tilemaps/6.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('7', 'assets/tilemaps/7.json', null, Phaser.Tilemap.TILED_JSON);
+    // this.load.tilemap('3', 'assets/tilemaps/3.json', null, Phaser.Tilemap.TILED_JSON);
+    // this.load.tilemap('4', 'assets/tilemaps/4.json', null, Phaser.Tilemap.TILED_JSON);
+    // this.load.tilemap('5', 'assets/tilemaps/5.json', null, Phaser.Tilemap.TILED_JSON);
+    // this.load.tilemap('6', 'assets/tilemaps/6.json', null, Phaser.Tilemap.TILED_JSON);
+    // this.load.tilemap('7', 'assets/tilemaps/7.json', null, Phaser.Tilemap.TILED_JSON);
 
     // load tiles/sprites/images
     this.load.image('tiles', 'assets/img/tiles.png');
