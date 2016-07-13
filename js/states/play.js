@@ -1,6 +1,6 @@
 var MinerGame = MinerGame || {};
 
-MinerGame.level = '1';
+MinerGame.level = '3';
 MinerGame.secrets = 0;
 MinerGame.totalSecrets = 4;
 MinerGame.startTime = MinerGame.startTime || 0;
@@ -25,6 +25,8 @@ MinerGame.playState.prototype = {
     this.portalSound.volume -= .6;
     this.secretSound = this.add.audio('secret');
     this.secretSound.volume -= .6;
+    this.breakBlockSound = this.add.audio('dust');
+    this.breakBlockSound.volume -= .3;
 
     // init the tile map
     this.map = this.game.add.tilemap(MinerGame.level);
@@ -60,7 +62,7 @@ MinerGame.playState.prototype = {
     // create block dust effects
     this.blockDust = this.game.add.group();
     this.game.layers.effects.add(this.blockDust); // add to rendering layer
-    for (var i = 0; i < 50; i++) {
+    for (var i = 0; i < 250; i++) {
       var dust = this.game.add.sprite(0, 0, 'block-dust');
       dust.animations.add('burst');
       dust.kill();
@@ -120,14 +122,10 @@ MinerGame.playState.prototype = {
 
     // tutorial text
     if (MinerGame.level === '1') {
-        this.game.add.bitmapText(this.game.width - 14, this.game.height - 12, 'carrier_command', 'use arrows to move, press \'x\' to jump', 8).anchor.setTo(1, 1);
+      this.drawTutorialText('use arrows to move\n\npress \'x\' to jump');
+    } else if (MinerGame.level === '2') {
+      this.drawTutorialText('press \'x\' while sliding\n\ndown a wall to wall jump');
     }
-
-    // restart level button
-    // this.restartBtn = this.game.input.keyboard.addKey(Phaser.Keyboard.R);
-    // this.restartBtn.onDown.add(function() {
-    //   this.playerTrapHandler(this.player);
-    // }, this);
   },
   update: function() {
     // stage collisions
@@ -236,8 +234,12 @@ MinerGame.playState.prototype.playerTrapHandler = function(player, trap) {
 };
 
 MinerGame.playState.prototype.playerFragileHandler = function(player, block) {
-  // block disappears after .5 seconds
+  // block disappears after .25 seconds
   this.game.time.events.add(250, function() {
+    // play block breaking sound
+    if (!this.breakBlockSound.isPlaying) {
+      this.breakBlockSound.play();
+    }
     // make block dust
     var dust = this.blockDust.getFirstDead();
     dust.reset(block.worldX, block.worldY);
@@ -247,6 +249,15 @@ MinerGame.playState.prototype.playerFragileHandler = function(player, block) {
     this.map.removeTile(block.x, block.y, 'fragileLayer');
     // replace block 1.5s after it disappears
     this.game.time.events.add(1500, function() {
+      // make dust when block comes back
+      var dust = this.blockDust.getFirstDead();
+      dust.reset(block.worldX, block.worldY);
+      dust.animations.play('burst', 20, false, true);
+      // play dust sound again
+      if (!this.breakBlockSound.isPlaying) {
+        this.breakBlockSound.play();
+      }
+      // place the block
       this.map.putTile(index, block.x, block.y, 'fragileLayer');
     }, this);
   }, this);
@@ -339,4 +350,8 @@ MinerGame.playState.prototype.updateSecretText = function(numSecrets) {
 MinerGame.playState.prototype.updateTimerText = function() {
   var time = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
   this.timerText.text = 'time: ' + time;
+};
+
+MinerGame.playState.prototype.drawTutorialText = function(text) {
+  this.game.add.bitmapText(this.game.width - 14, this.game.height - 12, 'carrier_command', text, 8).anchor.setTo(1, 1);
 };

@@ -10,8 +10,8 @@ MinerGame.Player = function(game, x, y) {
   // sounds
   this.jumpSound = this.game.add.audio('jump');
   this.jumpSound.volume -= .6;
-  this.rocketSound = this.game.add.audio('rocket');
-  this.rocketSound.volume -= .5;
+  this.drillSound = this.game.add.audio('drill');
+  this.drillSound.volume -= .5;
   this.footstepSound = this.game.add.audio('footstep');
   this.footstepSound.volume -= .55;
   this.dustSound = this.game.add.audio('dust');
@@ -56,9 +56,6 @@ MinerGame.Player = function(game, x, y) {
   this.body.setSize(8, 12, 4, 4);
   this.body.gravity.y = 350;
   this.jumpSpeed = -200;
-  this.canAirJump = true;
-  this.rocketDuration = 250;
-  this.rocketClock = 0;
   this.body.maxVelocity.x = 190;
   this.maxFallSpeed = 500;
   this.body.maxVelocity.y = this.maxFallSpeed;
@@ -69,6 +66,8 @@ MinerGame.Player = function(game, x, y) {
   this.wallCheck = false; // for custom wall check
   this.wasOnGround = true; // for custom ground check
   this.groundDelay = 80; // player can jump up to 40 ms after leaving ground
+  this.wallBreakTime = 10; // how long player moves away from wall before they "unstick"
+  this.wallBreakClock = 0;
 
   // move player with cursor keys, jump with x
   this.cursors = this.game.input.keyboard.createCursorKeys();
@@ -82,8 +81,9 @@ MinerGame.Player = function(game, x, y) {
       return;
     }
 
-    // if on the wall
-    if (this.body.onWall() && !this.body.onFloor()) {
+    // if on the wall (not edges of game)
+    if (this.body.onWall() && !this.body.onFloor() &&
+        this.left > 0 && this.right < this.game.width) {
       this.wasOnGround = false;
       this.jumpSound.play();
       this.body.maxVelocity.y = this.maxFallSpeed;
@@ -105,14 +105,6 @@ MinerGame.Player = function(game, x, y) {
       this.body.velocity.y = this.jumpSpeed;
       this.currentState = this.airState;
       this.dropDust();
-    // in the air
-    } else {
-      if (this.canAirJump) {
-        this.canAirJump = false;
-        this.currentState = this.rocketState;
-        this.rocketSound.play();
-        this.rocketClock = this.game.time.time;
-      }
     }
   }, this);
 
@@ -213,7 +205,7 @@ MinerGame.Player.prototype.airState = function() {
   }
 
   // wall sliding (pre wall-jump)
-  if (this.body.onWall()) {
+  if (this.body.onWall() && this.left > 0 && this.right < this.game.width) {
     this.body.drag.x = this.dragConst;
     this.currentState = this.wallSlideState;
   }
@@ -227,6 +219,20 @@ MinerGame.Player.prototype.airState = function() {
 };
 
 MinerGame.Player.prototype.wallSlideState = function() {
+  // if not leaning in to wall, break away from wall after this.wallBreakTime frames
+  if ((this.cursors.right.isDown && this.facing === 'right') ||
+     (this.cursors.left.isDown && this.facing === 'left')) {
+    this.wallBreakClock = 0;
+  } else {
+    this.wallBreakClock++;
+  }
+
+  // "fall" off wall if not leaning into wall
+  if (this.wallBreakClock >= this.wallBreakTime) {
+    this.wallBreakClock = 0;
+    this.currentState = this.airState;
+  }
+
   // slide more slowly
   if (this.body.velocity.y >= this.maxFallSpeed / 2) {
     this.body.velocity.y = this.maxFallSpeed / 2;
@@ -249,49 +255,17 @@ MinerGame.Player.prototype.wallSlideState = function() {
 
   // let go of the wall
   if (!this.body.onWall()) {
+    this.wallBreakClock = 0;
     this.body.maxVelocity.y = this.maxFallSpeed;
     this.currentState = this.airState;
   }
 
   // hit the floor
   if (this.body.onFloor()) {
+    this.wallBreakClock = 0;
     this.body.maxVelocity.y = this.maxFallSpeed;
     this.currentState = this.groundState;
     this.dropDust();
-  }
-};
-
-MinerGame.Player.prototype.rocketState = function() {
-  // gain speed for this.rocketDuration
-  if (this.game.time.time - this.rocketClock <= this.rocketDuration) {
-    this.body.velocity.y = this.jumpSpeed;
-  }
-
-  // still rocketing straight up
-  this.body.velocity.x = 0;
-
-  // shake the player sprite
-  var offset = Math.random() - 0.4;
-  offset = offset < 0.3 ? 0.3 : offset;
-  offest = offset > 0.6 ? 0.6 : offset;
-  this.anchor.x = offset;
-  // make dust trail
-  if (this.game.time.time > this.dustTimer + 40) {
-    this.dropDust(true);
-    this.dustTimer = this.game.time.time;
-  }
-
-  // animate rocketing up
-  this.animations.stop();
-  if (this.facing === 'right') {
-    this.frame = 7;
-  } else {
-    this.frame = 12;
-  }
-
-  // at peak of jump, go back to normal air state
-  if (this.body.velocity.y >= -150){
-    this.currentState = this.airState;
   }
 };
 
