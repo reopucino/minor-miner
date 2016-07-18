@@ -19,7 +19,7 @@ MinerGame.preloadState.prototype = {
     this.load.tilemap('2', 'assets/tilemaps/2.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.tilemap('3', 'assets/tilemaps/3.json', null, Phaser.Tilemap.TILED_JSON);
     this.load.tilemap('4', 'assets/tilemaps/4.json', null, Phaser.Tilemap.TILED_JSON);
-    // this.load.tilemap('5', 'assets/tilemaps/5.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('5', 'assets/tilemaps/5.json', null, Phaser.Tilemap.TILED_JSON);
     // this.load.tilemap('6', 'assets/tilemaps/6.json', null, Phaser.Tilemap.TILED_JSON);
     // this.load.tilemap('7', 'assets/tilemaps/7.json', null, Phaser.Tilemap.TILED_JSON);
 
@@ -45,6 +45,7 @@ MinerGame.preloadState.prototype = {
     this.load.audio('footstep', 'assets/audio/footstep.wav');
     this.load.audio('dust', 'assets/audio/dust.wav');
     this.load.audio('drill', 'assets/audio/drill.wav');
+    this.load.audio('spring', 'assets/audio/spring.wav');
   },
   create: function() {
     this.state.start('menu');

@@ -66,7 +66,7 @@ MinerGame.Player = function(game, x, y) {
   this.wallCheck = false; // for custom wall check
   this.wasOnGround = true; // for custom ground check
   this.groundDelay = 80; // player can jump up to 40 ms after leaving ground
-  this.wallBreakTime = 10; // how long player moves away from wall before they "unstick"
+  this.wallBreakTime = 20; // how long player moves away from wall before they "unstick"
   this.wallBreakClock = 0;
 
   // move player with cursor keys, jump with x
@@ -77,7 +77,6 @@ MinerGame.Player = function(game, x, y) {
   this.jumpBtn.onDown.add(function() {
     // if player is dead, or if player has already jumped, return
     if (!this.body || this.spawning) {
-      console.log('stopped extra jump');
       return;
     }
 
@@ -141,10 +140,13 @@ MinerGame.Player.prototype.update = function() {
 
 // STATES //
 MinerGame.Player.prototype.groundState = function() {
-  // delayed "onGround" check for better controls
-  this.wasOnGround = true;
-  // reset airjump flag
-  this.canAirJump = true;
+  // disable jump when player landed on a spring
+  if (this.spring) {
+    this.spring = false;
+  } else {
+    // delayed "onGound" check for better controls
+    this.wasOnGround = true;
+  }
 
   // moving left or right
   this.moveX();
@@ -195,7 +197,7 @@ MinerGame.Player.prototype.airState = function() {
   this.moveX();
 
   // reduce friction
-  this.body.drag.x = this.dragConst / 5;
+  this.body.drag.x = this.dragConst / 2;
 
   // animate
   if (this.facing === 'left') {
@@ -234,8 +236,8 @@ MinerGame.Player.prototype.wallSlideState = function() {
   }
 
   // slide more slowly
-  if (this.body.velocity.y >= this.maxFallSpeed / 2) {
-    this.body.velocity.y = this.maxFallSpeed / 2;
+  if (this.body.velocity.y >= this.maxFallSpeed / 4) {
+    this.body.velocity.y = this.maxFallSpeed / 4;
   }
 
   // animate

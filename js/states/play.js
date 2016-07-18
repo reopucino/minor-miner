@@ -27,6 +27,8 @@ MinerGame.playState.prototype = {
     this.secretSound.volume -= .6;
     this.breakBlockSound = this.add.audio('dust');
     this.breakBlockSound.volume -= .3;
+    this.springSound = this.add.audio('spring');
+    this.springSound.volume -= .5;
 
     // init the tile map
     this.map = this.game.add.tilemap(MinerGame.level);
@@ -37,11 +39,13 @@ MinerGame.playState.prototype = {
     this.stageLayer = this.map.createLayer('stageLayer');
     this.trapsLayer = this.map.createLayer('trapsLayer');
     this.fragileLayer = this.map.createLayer('fragileLayer');
+    this.springLayer = this.map.createLayer('springLayer');
 
-    // set collisions on stageLayer, trapsLayer, and fragileLayer
+    // set collisions on stageLayer, trapsLayer, fragileLayer and springLayer
     this.map.setCollisionBetween(1, 2000, true, 'stageLayer');
     this.map.setCollisionBetween(1, 2000, true, 'trapsLayer');
     this.map.setCollisionBetween(1, 2000, true, 'fragileLayer');
+    this.map.setCollisionBetween(1, 2000, true, 'springLayer');
 
     // resize game world to match layer dimensions
     this.backgroundLayer.resizeWorld();
@@ -51,7 +55,7 @@ MinerGame.playState.prototype = {
     this.createPortal(); // end of level portal
     this.createSecrets(); // collectibles
 
-    // actor rendering layers
+    // actor/fx rendering layers
     this.game.layers = {
       player: this.game.add.group(),
       enemies: this.game.add.group(),
@@ -135,6 +139,9 @@ MinerGame.playState.prototype = {
     // collision with fragile blocks
     this.game.physics.arcade.collide(this.player,
     this.fragileLayer, this.playerFragileHandler, null, this);
+    // collision with spring blocks
+    this.game.physics.arcade.collide(this.player,
+    this.springLayer, this.playerSpringHandler, null, this);
     // portal to next level
     this.game.physics.arcade.collide(this.player, this.portals, this.playerPortalHandler, null, this);
     // secret collectible
@@ -262,6 +269,21 @@ MinerGame.playState.prototype.playerFragileHandler = function(player, block) {
     }, this);
   }, this);
 };
+
+MinerGame.playState.prototype.playerSpringHandler = function(player, block) {
+  // player has to hit from the top of the block
+  if (player.bottom > block.top) {
+    return;
+  }
+
+  // player bounces high
+  player.body.velocity.y = -400;
+  player.spring = true; // disable player jump...
+  // play spring noise
+  if (!this.springSound.isPlaying) {
+    this.springSound.play();
+  }
+}
 
 // GAMEPLAY STATE UTILITIES //
 
