@@ -335,7 +335,7 @@ MinerGame.Player.prototype.drillState = function() {
 
   // fall slowly, move constant right or left
   this.body.velocity.y = 15;
-  this.body.maxVelocity.x = this.hSpeed * 2;
+  this.body.maxVelocity.x = this.hSpeed * 1.5;
   if (this.facing === 'right') {
     this.body.velocity.x = this.body.maxVelocity.x;
     this.frame = 3;

@@ -170,9 +170,9 @@ MinerGame.playState.prototype = {
     // portal to next level
     this.game.physics.arcade.collide(this.player, this.portals, this.playerPortalHandler, null, this);
     // secret collectible
-    this.game.physics.arcade.collide(this.player, this.secrets, this.playerSecretHandler, null, this);
+    this.game.physics.arcade.overlap(this.player, this.secrets, this.playerSecretHandler, null, this);
     // powerup
-    this.game.physics.arcade.collide(this.player, this.powerups, this.playerPowerupHandler, null, this);
+    this.game.physics.arcade.overlap(this.player, this.powerups, this.playerPowerupHandler, null, this);
 
     // effects
     this.cameraShake();

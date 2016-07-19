@@ -52,7 +52,7 @@
    <properties>
     <property name="animated" type="bool" value="true"/>
     <property name="sprite" value="portal"/>
-    <property name="targetTilemap" value="end"/>
+    <property name="targetTilemap" value="7"/>
    </properties>
   </object>
   <object id="19" name="Powerup" type="powerup" gid="89" x="328" y="253" width="16" height="16">
