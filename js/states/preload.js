@@ -34,6 +34,8 @@ MinerGame.preloadState.prototype = {
     this.load.spritesheet('secret', 'assets/img/secret.png', 16, 16);
     this.load.image('secret-particle', 'assets/img/secret-particle.png');
     this.load.spritesheet('block-dust', 'assets/img/block-dust.png', 16, 16);
+    this.load.spritesheet('drill', 'assets/img/drill.png', 32, 16);
+    this.load.image('drill-particle', 'assets/img/drill-particle.png');
 
     // load audio assets
     this.load.audio('intro', 'assets/audio/intro.mp3');
@@ -44,8 +46,8 @@ MinerGame.preloadState.prototype = {
     this.load.audio('secret', 'assets/audio/secret.wav');
     this.load.audio('footstep', 'assets/audio/footstep.wav');
     this.load.audio('dust', 'assets/audio/dust.wav');
-    this.load.audio('drill', 'assets/audio/drill.wav');
     this.load.audio('spring', 'assets/audio/spring.wav');
+    this.load.audio('drill', 'assets/audio/drill.wav');
   },
   create: function() {
     this.state.start('menu');

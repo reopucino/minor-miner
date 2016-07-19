@@ -162,6 +162,9 @@ MinerGame.playState.prototype = {
 // COLLISION HANDLERS //
 
 MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
+  // destroy player drill
+  player.drillParticles.on = false;
+  player.drill.pendingDestroy = true;
   // destroy player and portal
   portal.pendingDestroy = true;
   player.pendingDestroy = true;
@@ -215,6 +218,9 @@ MinerGame.playState.prototype.playerSecretHandler = function(player, secret) {
 }
 
 MinerGame.playState.prototype.playerTrapHandler = function(player, trap) {
+  // kill drill
+  player.drillParticles.on = false;
+  player.drill.pendingDestroy = true;
   // player dies
   player.pendingDestroy = true;
 
