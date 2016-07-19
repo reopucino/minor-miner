@@ -37,7 +37,7 @@
                     {
                      "animated":true,
                      "sprite":"portal",
-                     "targetTilemap":"end"
+                     "targetTilemap":"6"
                     },
                  "propertytypes":
                     {

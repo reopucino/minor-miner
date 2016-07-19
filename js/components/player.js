@@ -1,11 +1,12 @@
 var MinerGame = MinerGame || {};
 
+MinerGame.drillEnabled = false;
+
 // PLAYER CLASS //
 MinerGame.Player = function(game, x, y) {
   Phaser.Sprite.call(this, game, x, y, 'player');
   this.game = game;
   this.alive = true;
-  this.game.layers.player.add(this); // rendering layer
   this.anchor.setTo(0.5);
 
   // sounds
@@ -81,13 +82,16 @@ MinerGame.Player = function(game, x, y) {
   // jump button handler
   this.jumpBtn.onDown.add(function() {
     // if player is dead, or if player has already jumped, return
-    if (!this.body || this.spawning) {
+    if (!this.body || this.spawning || this.currentState == this.pausedState) {
       return;
     }
 
     // reset maxVelocity.x
     this.body.maxVelocity.x = this.hSpeed;
+    this.drilling = false;
     this.drill.kill();
+    this.drillParticles.on = false;
+
 
     // if on the wall (not edges of game)
     if (this.body.onWall() && !this.body.onFloor() &&
@@ -118,7 +122,9 @@ MinerGame.Player = function(game, x, y) {
 
   // drilling powers
   this.drillBtn.onDown.add(function() {
-    this.currentState = this.drillState;
+    if (MinerGame.drillEnabled && this.currentState != this.pausedState) {
+      this.currentState = this.drillState;
+    }
   }, this);
   // drill sprite
   this.drill = this.game.add.sprite(0, 0, 'drill');
@@ -127,6 +133,8 @@ MinerGame.Player = function(game, x, y) {
   this.drill.animations.add('drill-left', [4,5,6,7]);
   this.drill.anchor.y = 0.5;
   this.drill.kill();
+  this.drilling = false;
+  this.addChild(this.drill);
   // drill effects
   this.drillParticles = this.game.add.emitter(0, 0, 200);
   this.drillParticles.makeParticles('drill-particle');
@@ -154,6 +162,7 @@ MinerGame.Player = function(game, x, y) {
   // add to the game
   this.game.add.existing(this);
   this.game.layers.player.add(this);
+  this.game.layers.player.add(this.drill);
 
 };
 
@@ -169,6 +178,19 @@ MinerGame.Player.prototype.update = function() {
 };
 
 // STATES //
+MinerGame.Player.prototype.pausedState = function() {
+  this.body.velocity.x = 0;
+  this.body.acceleration.x = 0;
+
+  // stop running animation
+  this.animations.stop();
+  if (this.facing === 'left') {
+    this.frame = 14;
+  } else {
+    this.frame = 5;
+  }
+};
+
 MinerGame.Player.prototype.groundState = function() {
   // disable jump when player landed on a spring
   if (this.spring) {
@@ -302,6 +324,7 @@ MinerGame.Player.prototype.wallSlideState = function() {
 };
 
 MinerGame.Player.prototype.drillState = function() {
+  this.drilling = true;
 
   // animations
   this.animations.stop();
@@ -354,6 +377,7 @@ MinerGame.Player.prototype.drillState = function() {
 
   // done drilling, released button
   if (this.drillBtn.isUp) {
+    this.drilling = false;
     this.drill.kill();
     this.drillParticles.on = false;
     this.body.maxVelocity.x = this.hSpeed;

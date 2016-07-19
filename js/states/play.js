@@ -1,6 +1,5 @@
 var MinerGame = MinerGame || {};
 
-MinerGame.level = '4';
 MinerGame.secrets = 0;
 MinerGame.totalSecrets = 4;
 MinerGame.startTime = MinerGame.startTime || 0;
@@ -12,7 +11,10 @@ MinerGame.playState.prototype = {
   create: function() {
 
     // play music
-    if (!MinerGame.currentTrack) {
+    if (MinerGame.level === '6' && !MinerGame.drillEnabled) {
+      if (MinerGame.currentTrack)
+        MinerGame.currentTrack.stop();
+    } else if (!MinerGame.currentTrack) {
       MinerGame.currentTrack = this.game.add.audio('field1');
       MinerGame.currentTrack.volume -= .3;
       MinerGame.currentTrack.loopFull();
@@ -29,6 +31,11 @@ MinerGame.playState.prototype = {
     this.breakBlockSound.volume -= .3;
     this.springSound = this.add.audio('spring');
     this.springSound.volume -= .5;
+    this.drillBurstSound = this.game.add.audio('drill-burst');
+    this.drillBurstSound.volume -= .6;
+    this.drillBurstSoundClock = 0;
+    this.powerupSound = this.game.add.audio('powerup');
+    this.powerupSound.volume -= 0.5;
 
     // init the tile map
     this.map = this.game.add.tilemap(MinerGame.level);
@@ -40,18 +47,20 @@ MinerGame.playState.prototype = {
     this.trapsLayer = this.map.createLayer('trapsLayer');
     this.fragileLayer = this.map.createLayer('fragileLayer');
     this.springLayer = this.map.createLayer('springLayer');
+    this.drillLayer = this.map.createLayer('drillLayer');
 
     // set collisions on stageLayer, trapsLayer, fragileLayer and springLayer
     this.map.setCollisionBetween(1, 2000, true, 'stageLayer');
     this.map.setCollisionBetween(1, 2000, true, 'trapsLayer');
     this.map.setCollisionBetween(1, 2000, true, 'fragileLayer');
     this.map.setCollisionBetween(1, 2000, true, 'springLayer');
+    this.map.setCollisionBetween(1, 2000, true, 'drillLayer');
 
     // resize game world to match layer dimensions
     this.backgroundLayer.resizeWorld();
 
     // create items on the stage
-    this.createItems(); // powerups
+    this.createPowerups(); // powerups
     this.createPortal(); // end of level portal
     this.createSecrets(); // collectibles
 
@@ -66,11 +75,25 @@ MinerGame.playState.prototype = {
     // create block dust effects
     this.blockDust = this.game.add.group();
     this.game.layers.effects.add(this.blockDust); // add to rendering layer
-    for (var i = 0; i < 250; i++) {
+    var i;
+    for (i = 0; i < 250; i++) {
       var dust = this.game.add.sprite(0, 0, 'block-dust');
       dust.animations.add('burst');
       dust.kill();
       this.blockDust.add(dust);
+    }
+
+    // create drill burst effects
+    this.drillBurstGroup = this.game.add.group();
+    this.game.layers.effects.add(this.drillBurstGroup);
+    for (i = 0; i < 500; i++) {
+      var burst = this.game.add.sprite(0, 0, 'drill-particle');
+      this.game.physics.arcade.enable(burst);
+      // scale up
+      burst.scale.set(1.5);
+      burst.lifespan = 200;
+      burst.kill();
+      this.drillBurstGroup.add(burst);
     }
 
     //create player
@@ -142,10 +165,14 @@ MinerGame.playState.prototype = {
     // collision with spring blocks
     this.game.physics.arcade.collide(this.player,
     this.springLayer, this.playerSpringHandler, null, this);
+    // collision with drill blocks
+    this.game.physics.arcade.collide(this.player, this.drillLayer, this.drillBlockHandler, null, this);
     // portal to next level
     this.game.physics.arcade.collide(this.player, this.portals, this.playerPortalHandler, null, this);
     // secret collectible
     this.game.physics.arcade.collide(this.player, this.secrets, this.playerSecretHandler, null, this);
+    // powerup
+    this.game.physics.arcade.collide(this.player, this.powerups, this.playerPowerupHandler, null, this);
 
     // effects
     this.cameraShake();
@@ -170,7 +197,6 @@ MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
   player.pendingDestroy = true;
   // save secrets collected
   MinerGame.secrets += player.secrets;
-  console.log('secrets collected: ' + MinerGame.secrets);
   // play warp sound
   this.portalSound.play();
   // add player warp sprite
@@ -180,7 +206,6 @@ MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
   playerWarp.animations.play('warp', 25, false, true);
   // start next level on warp animation end
   playerWarp.events.onAnimationComplete.add(function() {
-    console.log('warping to ' + portal.targetTilemap);
     MinerGame.level = portal.targetTilemap;
     MinerGame.lavaParticles = null;
     MinerGame.lavaSplash = null;
@@ -214,8 +239,7 @@ MinerGame.playState.prototype.playerSecretHandler = function(player, secret) {
   this.game.time.events.add(700, function() {
     splash.on = false;
   });
-
-}
+};
 
 MinerGame.playState.prototype.playerTrapHandler = function(player, trap) {
   // kill drill
@@ -276,6 +300,24 @@ MinerGame.playState.prototype.playerFragileHandler = function(player, block) {
   }, this);
 };
 
+MinerGame.playState.prototype.drillBlockHandler = function(drill, block) {
+  if(!drill.drilling) {
+    return;
+  }
+  // play breaking block sound
+  if (!this.breakBlockSound.isPlaying) {
+    this.breakBlockSound.play();
+  }
+  // make block dust
+  var dust = this.blockDust.getFirstDead();
+  dust.reset(block.worldX, block.worldY);
+  dust.animations.play('burst', 20, false, true);
+  // make drill particle effect
+  this.drillBurst(block.worldX + block.width / 2, block.worldY + block.height / 2);
+  // remove block
+  this.map.removeTile(block.x, block.y, 'drillLayer');
+};
+
 MinerGame.playState.prototype.playerSpringHandler = function(player, block) {
   // player has to hit from the top of the block
   if (player.bottom > block.top) {
@@ -289,7 +331,36 @@ MinerGame.playState.prototype.playerSpringHandler = function(player, block) {
   if (!this.springSound.isPlaying) {
     this.springSound.play();
   }
-}
+};
+
+MinerGame.playState.prototype.playerPowerupHandler = function(player, powerup) {
+  this.drillBurst(powerup.x, powerup.y);
+  powerup.pendingDestroy = true;
+  MinerGame.drillEnabled = true;
+  // play powerup sound
+  this.powerupSound.play();
+  // change music
+  MinerGame.currentTrack = this.game.add.audio('field2');
+  MinerGame.currentTrack.volume -= .3;
+  MinerGame.currentTrack.loopFull();
+
+  // freeze player
+  this.player.paused = true;
+
+  // show drill tutorial
+  var drillText = this.game.add.bitmapText(this.game.world.centerX, this.game.world.centerY, 'carrier_command', 'You got the laser drill!', 16);
+  drillText.anchor.setTo(0.5, 0.5);
+  // pause player
+  this.player.currentState = this.player.pausedState;
+  this.game.time.events.add(3000, function() {
+    drillText.text = 'Hold Z to use the drill';
+    this.game.time.events.add(3000, function() {
+      this.player.currentState = this.player.groundState;
+      drillText.pendingDestroy = true;
+    }, this);
+  }, this);
+
+};
 
 // GAMEPLAY STATE UTILITIES //
 
@@ -321,14 +392,16 @@ MinerGame.playState.prototype.createFromTiledObject = function(element, group) {
   }
 };
 
-MinerGame.playState.prototype.createItems = function() {
+MinerGame.playState.prototype.createPowerups = function() {
   // create items
-  this.items = this.game.add.group();
-  this.items.enableBody = true;
-  var item;
-  var result = this.findObjectsByType('item', this.map, 'objectsLayer');
+  if (MinerGame.drillEnabled) {
+    return;
+  }
+  this.powerups = this.game.add.group();
+  this.powerups.enableBody = true;
+  var result = this.findObjectsByType('powerup', this.map, 'objectsLayer');
   result.forEach(function(element){
-    this.createFromTiledObject(element, this.items);
+    this.createFromTiledObject(element, this.powerups);
   }, this);
 };
 
@@ -382,4 +455,23 @@ MinerGame.playState.prototype.updateTimerText = function() {
 
 MinerGame.playState.prototype.drawTutorialText = function(text) {
   this.game.add.bitmapText(this.game.width - 14, this.game.height - 12, 'carrier_command', text, 8).anchor.setTo(1, 1);
+};
+
+// shoot a radius of drill particles
+MinerGame.playState.prototype.drillBurst = function(x, y) {
+  // play sound
+  if (this.game.time.time > this.drillBurstSoundClock + 50) {
+    this.drillBurstSound.play();
+    this.drillBurstSoundClock = this.game.time.time;
+  }
+  for (var i = 0; i < 8; i++) {
+    var part = this.drillBurstGroup.getFirstDead();
+    // revive and position
+    part.revive();
+    part.reset(x, y);
+    // shoot out
+    this.game.physics.arcade.velocityFromAngle(i*45, 300, part.body.velocity);
+    part.angle = i*45;
+    part.lifespan = 200;
+  }
 };
