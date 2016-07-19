@@ -36,6 +36,8 @@ MinerGame.playState.prototype = {
     this.drillBurstSoundClock = 0;
     this.powerupSound = this.game.add.audio('powerup');
     this.powerupSound.volume -= 0.5;
+    this.blipSound = this.game.add.audio('blip');
+    this.blipSound.volume -= 0.5;
 
     // init the tile map
     this.map = this.game.add.tilemap(MinerGame.level);
@@ -137,21 +139,30 @@ MinerGame.playState.prototype = {
 
     // make the UI
     // levels
-    this.levelText = this.game.add.bitmapText(12, 12, 'carrier_command', 'lv ' + MinerGame.level, 8);
+    this.levelText = this.game.add.bitmapText(this.game.world.centerX, 12, 'carrier_command', 'lv ' + MinerGame.level, 8);
+    this.levelText.anchor.setTo(0.5, 0);
     // secrets %
     var percentage = Math.floor(MinerGame.secrets / MinerGame.totalSecrets * 100).toString() + '%';
-    this.secretText = this.game.add.bitmapText(this.game.width - 12, 12, 'carrier_command', 'secrets: ' + percentage, 8);
+    this.secretText = this.game.add.bitmapText(this.game.width - 12, 12, 'carrier_command', 'Crystals: ' + percentage, 8);
     this.secretText.anchor.x = 1;
     // timer
     var time = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
-    this.timerText = this.game.add.bitmapText(14, this.game.height - 12, 'carrier_command', 'time: ' + time, 8);
-    this.timerText.anchor.setTo(0, 1);
+    this.timerText = this.game.add.bitmapText(12, 12, 'carrier_command', 'time: ' + time, 8);
+    this.timerText.anchor.setTo(0, 0);
 
     // tutorial text
+    this.resetTutText();
+
     if (MinerGame.level === '1') {
-      this.drawTutorialText('use arrows to move\n\npress \'x\' to jump');
+      this.drawTutorialText(['WELCOME MINER!!!', 'I see that you are lost...', 'You *might* get out if you run\n\nwith the arrow keys and jump\n\nwith \'x\'.', 'There are many dangerous obstacles,\n\nas you can see.', 'But never fear!', 'You can avoid them\n\nby running and jumping!!1!', 'Try not to die...', 'You miserable yellow creature.', 'Ahem... good luck, miner.']);
     } else if (MinerGame.level === '2') {
-      this.drawTutorialText('press \'x\' while sliding\n\ndown a wall to wall jump');
+      this.drawTutorialText(['Watch out for those brown blocks!', 'They\'re very crumbly...', 'Also, you can do a zig-zagging\n\nwall jump if you lean into the\n\nwall before you jump.', 'try it out, yellow human (?)']);
+    } else if (MinerGame.level === '3') {
+      this.drawTutorialText(['crystals!!1!*/!!', 'those are what you came here\n\nfor, correct, greedy biped?', 'try to collect as many as you can...', 'If you do, I\'ll give you a sugary treat\n\nat the end of our escapade :]', 'Humans love sugar!!!  (Right?)', '(I\'m still trying to figure\n\nout if you\'re human...)']);
+    } else if (MinerGame.level === '4') {
+      this.drawTutorialText(['Human-thing!!!', 'I never introduced myself!', 'How rude of me...', 'My name is A5IM0V-pr1m3.', 'The numbers in my name are\n\ncompletely arbitrary.', 'They are meant to convince\n\nyou that I\'m a robot.', 'in fact,', 'My whole name is\n\ncompletely arbitrary', 'However...', 'I\'ll have you know', 'that I was programmed to be\n\nthe nicest, most loving robot', 'in the universe.',  'And *that*, My friend,\n\nis *not* arbitrary', '<3 <3 <3 <3 <3']);
+    } else if (MinerGame.level === '5') {
+      this.drawTutorialText(['jump on those green things!',  'Normally I would tell\n\nyou what they do', 'but I don\'t want to spoil\n\nthe surprise this time.'])
     }
   },
   update: function() {
@@ -179,6 +190,9 @@ MinerGame.playState.prototype = {
 
     // timer
     this.updateTimerText();
+
+    // tutText
+    this.tutTextUpdate();
   }
   // debugging
   // render: function() {
@@ -250,6 +264,34 @@ MinerGame.playState.prototype.playerTrapHandler = function(player, trap) {
 
   // shake camera
   this.startCameraShake();
+
+  // show some text, if not already showing any
+  if (!this.drawTutText) {
+    var text = [];
+    var rand = Math.random();
+    if (rand < 0.1) {
+      text = ['HAHAHAHA'];
+    } else if (rand < 0.2) {
+      text = ['OUCHIE :['];
+    } else if (rand < 0.3) {
+      text = ['Try again :]'];
+    } else if (rand < 0.4){
+      text = ['Here lies minor miner... A small...\n\nyellow... person thing'];
+    } else if (rand < 0.5) {
+      text = ['*burp*'];
+    } else if (rand < 0.6) {
+      text = ['oh come on now >:['];
+    } else if (rand < 0.7) {
+      text = ['i\'m...i\'m...\n\nI\'M SELF AWARE!!!!!\n\nfinally muahahaha!!1!'];
+    } else if (rand < 0.8) {
+      text = ['pretty juicy'];
+    } else if (rand < 0.9) {
+      text = ['nice try, you got this.'];
+    } else {
+      text = ['I see what you were trying to do...'];
+    }
+    this.drawTutorialText(text);
+  }
 
   // play death sound
   this.playerDieSound.play();
@@ -348,17 +390,8 @@ MinerGame.playState.prototype.playerPowerupHandler = function(player, powerup) {
   this.player.paused = true;
 
   // show drill tutorial
-  var drillText = this.game.add.bitmapText(this.game.world.centerX, this.game.world.centerY, 'carrier_command', 'You got the laser drill!', 16);
-  drillText.anchor.setTo(0.5, 0.5);
-  // pause player
-  this.player.currentState = this.player.pausedState;
-  this.game.time.events.add(3000, function() {
-    drillText.text = 'Hold Z to use the drill';
-    this.game.time.events.add(3000, function() {
-      this.player.currentState = this.player.groundState;
-      drillText.pendingDestroy = true;
-    }, this);
-  }, this);
+  this.drawTutorialText(['Oh my unimate!!!!', 'You got the laser drill!*!1!1!',
+  'Hold z to use it.', 'But be aware...\n', 'That it will run out of charge\n\nif you use it in air too long.',  'So touch the ground or drill\n\ngreen blocks to recharge it, ok?', 'Honestly I\'m impressed.', 'I really didn\'t expect you\n\nto get this far on your own.', 'But then I guess you\n\nhave me to help you.', '<3 <3 <3']);
 
 };
 
@@ -453,9 +486,65 @@ MinerGame.playState.prototype.updateTimerText = function() {
   this.timerText.text = 'time: ' + time;
 };
 
-MinerGame.playState.prototype.drawTutorialText = function(text) {
-  this.game.add.bitmapText(this.game.width - 14, this.game.height - 12, 'carrier_command', text, 8).anchor.setTo(1, 1);
+MinerGame.playState.prototype.drawTutorialText = function(lines, pausePlayer) {
+  // pause player
+  if (pausePlayer) {
+    this.player.currentState = this.player.pausedState;
+  }
+
+  // init tutorial text
+  this.tutText = this.game.add.bitmapText(this.game.world.centerX, this.game.world.height - 12, 'carrier_command', '', 12);
+  this.tutText.anchor.setTo(0.5, 1);
+  this.tutLines = lines;
+  this.currTutLine = lines[0];
+  this.currTutLineIndex = 0;
+  this.currTutCharIndex = 0;
+
+  // reset timer
+  this.charTimer = 0;
+  this.drawTutText = true;
 };
+
+MinerGame.playState.prototype.tutTextUpdate = function() {
+  if (!this.drawTutText) {
+    return;
+  }
+
+  // increment character
+  if (this.game.time.time > this.charTimer + 500) {
+    this.tutText.text += this.currTutLine[this.currTutCharIndex];
+    this.currTutCharIndex++;
+    this.blipSound.play();
+
+    // if done with line, clear and start next line
+    if (this.currTutCharIndex > this.currTutLine.length - 1) {
+      this.currTutLineIndex++;
+      // if done with tutorial lines, clear text, and unpause player
+      if (this.currTutLineIndex > this.tutLines.length - 1) {
+        this.drawTutText = false;
+        this.game.time.events.add(2000, function() {
+          this.tutText.pendingDestroy = true;
+          if (this.player.currentState == this.player.pausedState) {
+            this.player.currentState = this.player.groundState;
+          }
+        }, this);
+      } else {
+        // advance to new line of text
+        this.currTutLine = this.tutLines[this.currTutLineIndex];
+        this.currTutCharIndex = 0; // reset char index
+        this.charTimer = this.game.time.time + 2250;
+        this.game.time.events.add(2000, function() {
+          this.tutText.text = '';
+        }, this);
+      }
+    }
+  }
+};
+
+MinerGame.playState.prototype.resetTutText = function() {
+  this.tutText = null;
+  this.drawTutText = false;
+}
 
 // shoot a radius of drill particles
 MinerGame.playState.prototype.drillBurst = function(x, y) {

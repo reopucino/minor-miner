@@ -57,7 +57,7 @@ MinerGame.menuState.prototype = {
       var startTween = this.game.add.tween(startText).to({ alpha: 0 }, 100, "Linear", true, 0, -1, true);
       // after 1.5 sec, transition to next state
       this.game.time.events.add(700, function() {
-        MinerGame.level = '6';
+        MinerGame.level = '1';
         MinerGame.drillEnabled = false;
         MinerGame.startTime = this.game.time.totalElapsedSeconds();
         this.game.state.start('play');

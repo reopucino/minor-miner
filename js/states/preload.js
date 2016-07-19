@@ -52,6 +52,7 @@ MinerGame.preloadState.prototype = {
     this.load.audio('drill', 'assets/audio/drill.wav');
     this.load.audio('drill-burst', 'assets/audio/drill_burst.wav');
     this.load.audio('powerup', 'assets/audio/powerup.wav');
+    this.load.audio('blip', 'assets/audio/blip.wav');
   },
   create: function() {
     this.state.start('menu');
