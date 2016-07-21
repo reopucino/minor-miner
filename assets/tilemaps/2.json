@@ -51,6 +51,94 @@
                  "width":16,
                  "x":441,
                  "y":62
+                }, 
+                {
+                 "gid":93,
+                 "height":16,
+                 "id":16,
+                 "name":"Secret",
+                 "properties":
+                    {
+                     "animated":true,
+                     "sprite":"secret"
+                    },
+                 "propertytypes":
+                    {
+                     "animated":"bool",
+                     "sprite":"string"
+                    },
+                 "rotation":0,
+                 "type":"secret",
+                 "visible":true,
+                 "width":16,
+                 "x":560,
+                 "y":264
+                }, 
+                {
+                 "gid":93,
+                 "height":16,
+                 "id":17,
+                 "name":"Secret",
+                 "properties":
+                    {
+                     "animated":true,
+                     "sprite":"secret"
+                    },
+                 "propertytypes":
+                    {
+                     "animated":"bool",
+                     "sprite":"string"
+                    },
+                 "rotation":0,
+                 "type":"secret",
+                 "visible":true,
+                 "width":16,
+                 "x":496,
+                 "y":207
+                }, 
+                {
+                 "gid":93,
+                 "height":16,
+                 "id":18,
+                 "name":"Secret",
+                 "properties":
+                    {
+                     "animated":true,
+                     "sprite":"secret"
+                    },
+                 "propertytypes":
+                    {
+                     "animated":"bool",
+                     "sprite":"string"
+                    },
+                 "rotation":0,
+                 "type":"secret",
+                 "visible":true,
+                 "width":16,
+                 "x":560,
+                 "y":152
+                }, 
+                {
+                 "gid":93,
+                 "height":16,
+                 "id":19,
+                 "name":"Secret",
+                 "properties":
+                    {
+                     "animated":true,
+                     "sprite":"secret"
+                    },
+                 "propertytypes":
+                    {
+                     "animated":"bool",
+                     "sprite":"string"
+                    },
+                 "rotation":0,
+                 "type":"secret",
+                 "visible":true,
+                 "width":16,
+                 "x":496,
+                 "y":96
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -114,7 +202,7 @@
          "x":0,
          "y":0
         }],
- "nextobjectid":16,
+ "nextobjectid":21,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tileheight":16,

@@ -15,14 +15,10 @@ MinerGame.preloadState.prototype = {
 
     // load tilemaps
     this.load.tilemap('menu', 'assets/tilemaps/menu.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('1', 'assets/tilemaps/1.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('2', 'assets/tilemaps/2.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('3', 'assets/tilemaps/3.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('4', 'assets/tilemaps/4.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('5', 'assets/tilemaps/5.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('6', 'assets/tilemaps/6.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('7', 'assets/tilemaps/7.json', null, Phaser.Tilemap.TILED_JSON);
-    this.load.tilemap('8', 'assets/tilemaps/8.json', null, Phaser.Tilemap.TILED_JSON);
+    // level tilemaps
+    for (var i = 1; i <= 14; i++) {
+      this.load.tilemap(i.toString(), 'assets/tilemaps/' + i.toString() + '.json', null, Phaser.Tilemap.TILED_JSON);
+    }
 
     // load tiles/sprites/images
     this.load.image('tiles', 'assets/img/tiles.png');
@@ -35,8 +31,9 @@ MinerGame.preloadState.prototype = {
     this.load.spritesheet('secret', 'assets/img/secret.png', 16, 16);
     this.load.image('secret-particle', 'assets/img/secret-particle.png');
     this.load.spritesheet('block-dust', 'assets/img/block-dust.png', 16, 16);
-    this.load.spritesheet('drill', 'assets/img/drill.png', 32, 16);
+    this.load.spritesheet('drill', 'assets/img/drill.png', 16, 8);
     this.load.image('drill-particle', 'assets/img/drill-particle.png');
+    this.load.spritesheet('battery', 'assets/img/battery.png', 36, 16);
 
     // load audio assets
     this.load.audio('intro', 'assets/audio/intro.mp3');
@@ -53,6 +50,7 @@ MinerGame.preloadState.prototype = {
     this.load.audio('drill-burst', 'assets/audio/drill_burst.wav');
     this.load.audio('powerup', 'assets/audio/powerup.wav');
     this.load.audio('blip', 'assets/audio/blip.wav');
+    this.load.audio('dead-drill', 'assets/audio/dead-drill.wav');
   },
   create: function() {
     this.state.start('menu');
