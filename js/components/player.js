@@ -1,11 +1,10 @@
 var MinerGame = MinerGame || {};
 
-MinerGame.drillEnabled = false;
-
 // PLAYER CLASS //
-MinerGame.Player = function(game, x, y) {
+MinerGame.Player = function(game, input, x, y) {
   Phaser.Sprite.call(this, game, x, y, 'player');
   this.game = game;
+  this.input = input;
   this.alive = true;
   this.anchor.setTo(0.5);
 
@@ -13,7 +12,7 @@ MinerGame.Player = function(game, x, y) {
   this.jumpSound = this.game.add.audio('jump');
   this.jumpSound.volume -= .6;
   this.footstepSound = this.game.add.audio('footstep');
-  this.footstepSound.volume -= .55;
+  this.footstepSound.volume -= .3;
   this.dustSound = this.game.add.audio('dust');
   this.dustSound.volume -= .4;
   this.drillSound = this.game.add.audio('drill');
@@ -76,63 +75,6 @@ MinerGame.Player = function(game, x, y) {
   this.wallBreakTime = 20; // how long player moves away from wall before they "unstick"
   this.wallBreakClock = 0;
 
-  // move player with cursor keys, jump with x
-  this.cursors = this.game.input.keyboard.createCursorKeys();
-  this.jumpBtn = this.game.input.keyboard.addKey(Phaser.Keyboard.X);
-  this.drillBtn = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
-
-  // jump button handler
-  this.jumpBtn.onDown.add(function() {
-    // if player is dead, or if player has already jumped, return
-    if (!this.body || this.spawning || this.currentState == this.pausedState) {
-      return;
-    }
-
-    // reset maxVelocity.x
-    this.body.maxVelocity.x = this.hSpeed;
-    this.drilling = false;
-    this.drill.kill();
-
-    // if on the wall (not edges of game)
-    if (this.body.onWall() && !this.body.onFloor() &&
-        this.left > 0 && this.right < this.game.width) {
-      this.wasOnGround = false;
-      this.jumpSound.play();
-      this.body.maxVelocity.y = this.maxFallSpeed;
-      this.body.velocity.y = this.jumpSpeed;
-      // jump away from wall
-      if (this.facing === 'left') {
-        this.body.velocity.x = this.body.maxVelocity.x;
-      } else {
-        this.body.velocity.x = -this.body.maxVelocity.x;
-      }
-      // make dust on the wall
-      this.dropDust();
-      // change state to air state
-      this.currentState = this.airState;
-    // if on the floor (not on the wall)
-    } else if (this.body.onFloor() || this.wasOnGround) {
-      this.wasOnGround = false;
-      this.jumpSound.play();
-      this.body.velocity.y = this.jumpSpeed;
-      this.currentState = this.airState;
-      this.dropDust();
-    }
-  }, this);
-
-  // drilling powers
-  this.drillBtn.onDown.add(function() {
-    if (this.spawning) {
-      return;
-    }
-    if (this.drillCharge <= 0) {
-      this.deadDrillSound.play();
-      return;
-    }
-    if (MinerGame.drillEnabled && this.currentState != this.pausedState) {
-      this.currentState = this.drillState;
-    }
-  }, this);
   // drill sprite
   this.drill = this.game.add.sprite(0, 0, 'drill');
   this.game.physics.arcade.enable(this.drill);
@@ -180,6 +122,17 @@ MinerGame.Player.prototype.update = function() {
   if (this.spawning) {
     return;
   }
+
+  // update input (check for controller, refresh buffer)
+  this.input.update();
+  // handle input
+  if (this.input.primaryPressed()) {
+    this.jumpBtnHandler();
+  }
+  if (this.input.secondaryPressed()) {
+    this.drillBtnHandler();
+  }
+
   // animations and state logic
   this.currentState();
 
@@ -243,7 +196,6 @@ MinerGame.Player.prototype.groundState = function() {
       this.frame = 5;
     }
   }
-
   // fell off a ledge
   if (!this.body.onFloor()) {
     this.currentState = this.airState;
@@ -287,8 +239,8 @@ MinerGame.Player.prototype.airState = function() {
 
 MinerGame.Player.prototype.wallSlideState = function() {
   // if not leaning in to wall, break away from wall after this.wallBreakTime frames
-  if ((this.cursors.right.isDown && this.facing === 'right') ||
-     (this.cursors.left.isDown && this.facing === 'left')) {
+  if ((this.input.rightIsDown && this.facing === 'right') ||
+     (this.input.leftIsDown && this.facing === 'left')) {
     this.wallBreakClock = 0;
   } else {
     this.wallBreakClock++;
@@ -408,7 +360,7 @@ MinerGame.Player.prototype.drillState = function() {
   }
 
   // done drilling, released button
-  if (this.drillBtn.isUp) {
+  if (this.input.secondaryReleased()) {
     this.drilling = false;
     this.drill.kill();
     this.body.maxVelocity.x = this.hSpeed;
@@ -424,14 +376,14 @@ MinerGame.Player.prototype.drillState = function() {
 // UTILITIES //
 MinerGame.Player.prototype.moveX = function() {
   // set acceleration on input
-  if (this.cursors.left.isDown) {
+  if (this.input.leftIsDown()) {
     this.facing = 'left';
     this.body.acceleration.x = -this.accelConst;
     // less acceleration if in air
     if (!this.body.onFloor()) {
       this.body.acceleration.x = -this.accelConst / 2;
     }
-  } else if (this.cursors.right.isDown) {
+  } else if (this.input.rightIsDown()) {
     this.facing = 'right';
     this.body.acceleration.x = this.accelConst;
     // less acceleration if in air
@@ -440,5 +392,57 @@ MinerGame.Player.prototype.moveX = function() {
     }
   } else {
     this.body.acceleration.x = 0;
+  }
+};
+
+// INPUT HANDLERS
+MinerGame.Player.prototype.jumpBtnHandler = function() {
+  // if player is dead, or if player has already jumped, return
+  if (!this.body || this.spawning || this.currentState == this.pausedState) {
+    return;
+  }
+
+  // reset maxVelocity.x
+  this.body.maxVelocity.x = this.hSpeed;
+  this.drilling = false;
+  this.drill.kill();
+
+  // if on the wall (not edges of game)
+  if (this.body.onWall() && !this.body.onFloor() &&
+      this.left > 0 && this.right < this.game.width) {
+    this.wasOnGround = false;
+    this.jumpSound.play();
+    this.body.maxVelocity.y = this.maxFallSpeed;
+    this.body.velocity.y = this.jumpSpeed;
+    // jump away from wall
+    if (this.facing === 'left') {
+      this.body.velocity.x = this.body.maxVelocity.x;
+    } else {
+      this.body.velocity.x = -this.body.maxVelocity.x;
+    }
+    // make dust on the wall
+    this.dropDust();
+    // change state to air state
+    this.currentState = this.airState;
+  // if on the floor (not on the wall)
+  } else if (this.body.onFloor() || this.wasOnGround) {
+    this.wasOnGround = false;
+    this.jumpSound.play();
+    this.body.velocity.y = this.jumpSpeed;
+    this.currentState = this.airState;
+    this.dropDust();
+  }
+};
+
+MinerGame.Player.prototype.drillBtnHandler = function() {
+  if (this.spawning) {
+    return;
+  }
+  if (this.drillCharge <= 0) {
+    this.deadDrillSound.play();
+    return;
+  }
+  if (MinerGame.drillEnabled && this.currentState != this.pausedState) {
+    this.currentState = this.drillState;
   }
 };

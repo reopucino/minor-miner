@@ -114,8 +114,9 @@ MinerGame.playState.prototype = {
     }
 
     //create player
+    this.input = new MinerGame.Input(this.game);
     var objects = this.findObjectsByType('playerStart', this.map, 'objectsLayer');
-    this.player = new MinerGame.Player(this.game, objects[0].x, objects[0].y);
+    this.player = new MinerGame.Player(this.game, this.input, objects[0].x, objects[0].y);
 
     //the camera will follow the player in the world
     this.game.camera.follow(this.player);
