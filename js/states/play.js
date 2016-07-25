@@ -423,13 +423,21 @@ MinerGame.playState.prototype.playerPowerupHandler = function(player, powerup) {
   'So touch the ground or drill\n\ngreen blocks to recharge it,\n\nand keep an eye on your\n\nbattery in the top-left, ok?',
   'be careful!  It has the\n\nworst battery invented...', 'Really, though.  It sucks.',
   '...',
-  'Honestly, I\'m impressed.',
-  'I really didn\'t expect you\n\nto get this far on your own,\n\ngreasy human.',
-  'But then I guess you\n\nhave me to help you,\n\nso you\'re not *really*\n\nalone.',
+  'I can tell this has\n\nbeen a struggle for you,\n\ngreasy human.',
+  'Good thing I\'m here to help you!',
   '<3 <3 <3',
-  'Just kidding! I\'m abandoning\n\nyou, of course!', 'HAHAHAHA!!!!1! so evil!',
-  'I\'m sure you\'ll find your way\n\nout.  But if you don\'t, may we\n\nnever meet again ;]',
-  'So long, ugly humanoid!']);
+  'Just kidding.  I\'m abandoning\n\nyou, of course!',
+  'HAHAHAHA!!!11!!!! SO EVIL!',
+  '>:D',
+  'So long, ugly humanoid!\n\nmay we never meet again!'
+  // 'Honestly, I\'m impressed.',
+  // 'I really didn\'t expect you\n\nto get this far on your own,\n\ngreasy human.',
+  // 'But then I guess you\n\nhave me to help you,\n\nso you\'re not *really*\n\nalone.',
+  // '<3 <3 <3',
+  // 'Just kidding! I\'m abandoning\n\nyou, of course!', 'HAHAHAHA!!!!1! so evil!',
+  // 'I\'m sure you\'ll find your way\n\nout.  But if you don\'t, may we\n\nnever meet again ;]',
+  // 'So long, ugly humanoid!'
+  ]);
 };
 
 // GAMEPLAY STATE UTILITIES //
