@@ -1,7 +1,7 @@
 var MinerGame = MinerGame || {};
 
 MinerGame.secrets = 0;
-MinerGame.totalSecrets = 4;
+MinerGame.totalSecrets = 106;
 MinerGame.startTime = MinerGame.startTime || 0;
 
 // GAMEPLAY STATE //

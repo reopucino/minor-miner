@@ -12,13 +12,17 @@ MinerGame.Input = function(game) {
   this.kbSecondary = this.game.input.keyboard.addKey(Phaser.Keyboard.Z);
   this.kbStart = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
+  // input buffer setup
+  this.bufferFrames = 6; // must be LESS than player.wasOnGround
+  this.kbPrimaryTimer = 0;
+  this.kbPrimaryDown = false;
+  this.kbPrimaryPressed = false;
+  this.kbPrimaryLast = this.kbPrimaryDown;
+  this.kbSecondaryDown = false;
+  this.kbSecondaryLast = this.kbSecondaryDown;
+
   // xbox 360 controller flag
   this.usingXbox = false;
-
-  this.kbPrimaryDown = this.kbPrimary.isDown;
-  this.kbPrimaryLast = this.kbPrimary.isDown;
-  this.kbSecondaryDown = this.kbSecondary.isDown;
-  this.kbSecondaryLast = this.kbSecondary.isDown;
 };
 
 // MinerGame.Input.prototype = Object.create(Object.prototoype);
@@ -34,12 +38,31 @@ MinerGame.Input.prototype.update = function() {
   // REMOVE THIS WHEN YOUR'E READY TO USE XBOX controller
   this.usingXbox = false;
 
-  // store previous and current keyboard state for primary and secondary
+  // keyboard input buffering for primary and secondary btns
+  if (this.kbPrimaryPressed) {
+    this.kbPrimaryTimer++;
+    if (this.kbPrimaryTimer > this.bufferFrames) {
+      this.kbPrimaryPressed = false;
+      this.kbPrimaryTimer = 0;
+    }
+  }
+
+  // primary and secondary buttons
   this.kbPrimaryLast = this.kbPrimaryDown;
   this.kbPrimaryDown = this.kbPrimary.isDown;
-
   this.kbSecondaryLast = this.kbSecondaryDown;
   this.kbSecondaryDown = this.kbSecondary.isDown;
+
+  if (this.resetting) {
+    this.resetting = false;
+    return; // skip the onDown flag if input is being cleared
+  }
+
+  // process and set flags (for handmade onDown events)
+  if (this.kbPrimaryDown && !this.kbPrimaryLast) { // just pressed
+    this.kbPrimaryPressed = true;
+  }
+
 };
 
 // GET BUTTON OBJECTS //
@@ -61,21 +84,21 @@ MinerGame.Input.prototype.primaryPressed = function() {
   if (this.usingXbox) {
     return this.pad1.justPressed(Phaser.Gamepad.XBOX360_A);
   }
-  return !this.kbPrimaryLast && this.kbPrimaryDown;
+  return this.kbPrimaryPressed;
 };
 
 MinerGame.Input.prototype.secondaryPressed = function() {
   if (this.usingXbox) {
     return this.pad1.justPressed(Phaser.Gamepad.XBOX360_X);
   }
-  return !this.kbSecondaryLast && this.kbSecondaryDown;
+  return this.kbSecondaryDown && !this.kbSecondaryLast;
 };
 
 MinerGame.Input.prototype.secondaryReleased = function() {
   if (this.usingXbox) {
     return this.pad1.justReleased(Phaser.Gamepad.XBOX360_X);
   }
-  return this.kbSecondaryLast && !this.kbSecondaryDown;
+  return !this.kbSecondaryDown && this.kbSecondaryLast;
 };
 
 MinerGame.Input.prototype.startPressed = function() {
@@ -116,4 +139,12 @@ MinerGame.Input.prototype.startBtnToString = function() {
 
 MinerGame.Input.prototype.destroy = function() {
   // nothing
+};
+
+MinerGame.Input.prototype.resetPrimary = function() {
+  this.kbPrimaryTimer = 0;
+  this.kbPrimaryDown = false;
+  this.kbPrimaryPressed = false;
+  this.kbPrimaryLast = this.kbPrimaryDown;
+  this.resetting = true;
 };

@@ -71,7 +71,8 @@ MinerGame.Player = function(game, input, x, y) {
   this.body.drag.x = this.dragConst;
   this.wallCheck = false; // for custom wall check
   this.wasOnGround = true; // for custom ground check
-  this.groundDelay = 80; // player can jump up to 40 ms after leaving ground
+  this.groundDelay = 6; // player can jump a few frames frames after leaving ground
+  this.groundDelayTimer = 0;
   this.wallBreakTime = 20; // how long player moves away from wall before they "unstick"
   this.wallBreakClock = 0;
 
@@ -123,6 +124,15 @@ MinerGame.Player.prototype.update = function() {
     return;
   }
 
+  // update battery charge
+  if (this.body.onFloor()) {
+    this.drillCharge = this.maxDrillCharge;
+  }
+  this.battery.frame = Math.floor(this.drillCharge / this.maxDrillCharge * 6);
+
+  // animations and state logic
+  this.currentState();
+
   // update input (check for controller, refresh buffer)
   this.input.update();
   // handle input
@@ -132,12 +142,6 @@ MinerGame.Player.prototype.update = function() {
   if (this.input.secondaryPressed()) {
     this.drillBtnHandler();
   }
-
-  // animations and state logic
-  this.currentState();
-
-  // update battery
-  this.battery.frame = Math.floor(this.drillCharge / this.maxDrillCharge * 6);
 };
 
 // STATES //
@@ -155,14 +159,11 @@ MinerGame.Player.prototype.pausedState = function() {
 };
 
 MinerGame.Player.prototype.groundState = function() {
-  // recharge drill instantly
-  this.drillCharge = this.maxDrillCharge;
-
   // disable jump when player landed on a spring
   if (this.spring) {
     this.spring = false;
   } else {
-    // delayed "onGound" check for better controls
+    // delayed "onGround" check for better controls
     this.wasOnGround = true;
   }
 
@@ -205,9 +206,11 @@ MinerGame.Player.prototype.groundState = function() {
 MinerGame.Player.prototype.airState = function() {
   // delayed "onGround" check for better controls
   if (this.wasOnGround) {
-    this.game.time.events.add(this.groundDelay, function() {
+    this.groundDelayTimer++;
+    if (this.groundDelayTimer > this.groundDelay) {
+      this.groundDelayTimer = 0;
       this.wasOnGround = false;
-    }, this);
+    }
   }
 
   // moving left or right
@@ -238,9 +241,10 @@ MinerGame.Player.prototype.airState = function() {
 };
 
 MinerGame.Player.prototype.wallSlideState = function() {
+
   // if not leaning in to wall, break away from wall after this.wallBreakTime frames
-  if ((this.input.rightIsDown && this.facing === 'right') ||
-     (this.input.leftIsDown && this.facing === 'left')) {
+  if ((this.input.rightIsDown() && this.facing === 'right') ||
+     (this.input.leftIsDown() && this.facing === 'left')) {
     this.wallBreakClock = 0;
   } else {
     this.wallBreakClock++;
@@ -266,7 +270,7 @@ MinerGame.Player.prototype.wallSlideState = function() {
   }
 
   // dust
-  if (this.game.time.time > this.dustTimer + 40 && this.body.velocity.y >= 30) {
+  if (this.game.time.time > this.dustTimer + 80 && this.body.velocity.y >= 30) {
     // make dust
     this.dropDust(true);
     this.dustTimer = this.game.time.time;
@@ -398,7 +402,7 @@ MinerGame.Player.prototype.moveX = function() {
 // INPUT HANDLERS
 MinerGame.Player.prototype.jumpBtnHandler = function() {
   // if player is dead, or if player has already jumped, return
-  if (!this.body || this.spawning || this.currentState == this.pausedState) {
+  if (!this.body || this.spawning || this.currentState == this.pausedState || this.currentState == this.drillState) {
     return;
   }
 
@@ -415,7 +419,7 @@ MinerGame.Player.prototype.jumpBtnHandler = function() {
     this.body.maxVelocity.y = this.maxFallSpeed;
     this.body.velocity.y = this.jumpSpeed;
     // jump away from wall
-    if (this.facing === 'left') {
+    if (this.body.blocked.left) {
       this.body.velocity.x = this.body.maxVelocity.x;
     } else {
       this.body.velocity.x = -this.body.maxVelocity.x;
@@ -431,6 +435,8 @@ MinerGame.Player.prototype.jumpBtnHandler = function() {
     this.body.velocity.y = this.jumpSpeed;
     this.currentState = this.airState;
     this.dropDust();
+    // clear input buffer for jump button
+    this.input.resetPrimary();
   }
 };
 
