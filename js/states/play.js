@@ -14,8 +14,15 @@ MinerGame.playState.prototype = {
 
     // play music
     if (MinerGame.level === '6' && !MinerGame.drillEnabled) {
-      if (MinerGame.currentTrack)
+      if (MinerGame.currentTrack) {
         MinerGame.currentTrack.stop();
+      }
+    } else if (MinerGame.level === 'final' && MinerGame.newLevel) {
+      MinerGame.currentTrack.stop();
+      MinerGame.newLevel = false;
+      MinerGame.currentTrack = this.game.add.audio('final-level');
+      MinerGame.currentTrack.volume -= .2;
+      MinerGame.currentTrack.loopFull();
     } else if (!MinerGame.currentTrack) {
       MinerGame.currentTrack = this.game.add.audio('field1');
       MinerGame.currentTrack.volume -= .2;
