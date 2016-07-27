@@ -1,7 +1,7 @@
 var MinerGame = MinerGame || {};
 
 MinerGame.secrets = 0;
-MinerGame.totalSecrets = 148;
+MinerGame.totalSecrets = 153;
 MinerGame.startTime = MinerGame.startTime || 0;
 
 // GAMEPLAY STATE //
@@ -18,7 +18,9 @@ MinerGame.playState.prototype = {
         MinerGame.currentTrack.stop();
       }
     } else if (MinerGame.level === 'final' && MinerGame.newLevel) {
-      MinerGame.currentTrack.stop();
+      if (MinerGame.currentTrack) {
+        MinerGame.currentTrack.stop();
+      }
       MinerGame.newLevel = false;
       MinerGame.currentTrack = this.game.add.audio('final-level');
       MinerGame.currentTrack.loopFull();
