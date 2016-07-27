@@ -71,8 +71,8 @@ MinerGame.menuState.prototype = {
       this.game.time.events.add(700, function() {
         this.game.camera.fade(0x00000, 250);
         MinerGame.newLevel = true;
-        MinerGame.level = '16';
-        MinerGame.drillEnabled = true;
+        MinerGame.level = '1';
+        MinerGame.drillEnabled = false;
         MinerGame.startTime = this.game.time.totalElapsedSeconds();
         this.game.camera.onFadeComplete.add(function() {
           this.starting = false;

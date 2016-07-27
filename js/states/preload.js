@@ -16,7 +16,7 @@ MinerGame.preloadState.prototype = {
     // load tilemaps
     this.load.tilemap('menu', 'assets/tilemaps/menu.json', null, Phaser.Tilemap.TILED_JSON);
     // level tilemaps
-    for (var i = 1; i <= 16; i++) {
+    for (var i = 1; i <= 17; i++) {
       this.load.tilemap(i.toString(), 'assets/tilemaps/' + i.toString() + '.json', null, Phaser.Tilemap.TILED_JSON);
     }
     // load last level

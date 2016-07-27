@@ -52,7 +52,7 @@
    <properties>
     <property name="animated" type="bool" value="true"/>
     <property name="sprite" value="portal"/>
-    <property name="targetTilemap" value="final"/>
+    <property name="targetTilemap" value="17"/>
    </properties>
   </object>
   <object id="30" name="Secret" type="secret" gid="93" x="304" y="208" width="16" height="16">

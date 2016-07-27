@@ -1,7 +1,7 @@
 var MinerGame = MinerGame || {};
 
 MinerGame.secrets = 0;
-MinerGame.totalSecrets = 106;
+MinerGame.totalSecrets = 148;
 MinerGame.startTime = MinerGame.startTime || 0;
 
 // GAMEPLAY STATE //
@@ -21,7 +21,6 @@ MinerGame.playState.prototype = {
       MinerGame.currentTrack.stop();
       MinerGame.newLevel = false;
       MinerGame.currentTrack = this.game.add.audio('final-level');
-      MinerGame.currentTrack.volume -= .2;
       MinerGame.currentTrack.loopFull();
     } else if (!MinerGame.currentTrack) {
       MinerGame.currentTrack = this.game.add.audio('field1');
@@ -186,7 +185,7 @@ MinerGame.playState.prototype = {
         this.drawTutorialText(['WELCOME MINER!',
         'My name is A5IM0V-pr1m3.', 'clearly, I am a robot.',
         'I see that you are lost.',
-        'That was my doing...','You see, my plan is to\n\nlead you mindlessly from\n\nroom to room with those\n\ngreen portals until you\n\neither give up or die!', 'HAHAHAHAHA!!1!*!!!1!!', 'However...', 'Seeing as how I am programmed\n\nto be the nicest, most loving\n\nrobot in the whole universe...', '<3 <3 <3', '...I guess I will offer\n\nsome basic advice.',  'You *might* get out alive\n\nif you run with the arrow\n\nkeys and jump with \'x\'.', 'Also, you can wall-jump\n\nif you slide against a\n\nwall and time your jumps\n\njust right.', 'Which i doubt your grubby,\n\nfleshy fingers can handle.', '<3', 'Collect as many crystals\n\nas you can and I *might*\n\nfeel like leading you to\n\neven more rooms.', '...so fun...', 'Try not to die, you\n\nmiserable yellow\n\ncreature.']);
+        'That was my doing...','You see, my plan is to\n\nlead you mindlessly from\n\nroom to room with those\n\ngreen portals until you\n\neither give up or die!', 'HAHAHAHAHA!!1!*!!!1!!\n\nso evil!!', '...',  'You *might* get out alive\n\nif you run with the arrow\n\nkeys and jump with \'x\'.', '...so fun...', 'Try not to die, you\n\nmiserable yellow\n\ncreature.', '<3']);
       }
     }
   },
@@ -428,22 +427,10 @@ MinerGame.playState.prototype.playerPowerupHandler = function(player, powerup) {
   'OK, more advice.',
   'Hold \'z\' to use the drill.\n\nBut be aware That it will \n\nrun out of charge if you\n\nuse it in air for too\n\nlong.',
   'So touch the ground or drill\n\ngreen blocks to recharge it,\n\nand keep an eye on your\n\nbattery in the top-left, ok?',
-  'be careful!  It has the\n\nworst battery invented...', 'Really, though.  It sucks.',
+  'be careful!  It has the\n\nworst battery invented...\n\nReally, though.  It sucks.',
   '...',
-  'I can tell this has\n\nbeen a struggle for you,\n\ngreasy human.',
-  'Good thing I\'m here to help you!',
-  '<3 <3 <3',
-  'Just kidding.  I\'m abandoning\n\nyou, of course!',
-  'HAHAHAHA!!!11!!!! SO EVIL!',
   '>:D',
   'So long, ugly humanoid!\n\nmay we never meet again!'
-  // 'Honestly, I\'m impressed.',
-  // 'I really didn\'t expect you\n\nto get this far on your own,\n\ngreasy human.',
-  // 'But then I guess you\n\nhave me to help you,\n\nso you\'re not *really*\n\nalone.',
-  // '<3 <3 <3',
-  // 'Just kidding! I\'m abandoning\n\nyou, of course!', 'HAHAHAHA!!!!1! so evil!',
-  // 'I\'m sure you\'ll find your way\n\nout.  But if you don\'t, may we\n\nnever meet again ;]',
-  // 'So long, ugly humanoid!'
   ]);
 };
 
