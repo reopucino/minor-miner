@@ -53,7 +53,11 @@ MinerGame.playState.prototype = {
 
     // init the tile map
     this.map = this.game.add.tilemap(MinerGame.level);
-    this.map.addTilesetImage('stageTiles', 'tiles');
+    if (MinerGame.hardMode) {
+      this.map.addTilesetImage('stageTiles', 'outside-tiles');
+    } else {
+      this.map.addTilesetImage('stageTiles', 'tiles');
+    }
 
     // create tilemap layers
     this.backgroundLayer = this.map.createLayer('backgroundLayer');
@@ -164,6 +168,9 @@ MinerGame.playState.prototype = {
     var percentage = Math.floor(MinerGame.secrets / MinerGame.totalSecrets * 100).toString() + '%';
     this.secretText = this.game.add.bitmapText(this.game.camera.width - 12, 30, 'carrier_command', 'Crystals: ' + percentage, 8);
     this.secretText.anchor.x = 1;
+    if (MinerGame.hardMode) {
+      this.secretText.kill();
+    }
     // timer
     var time = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
     this.timerText = this.game.add.bitmapText(this.game.camera.width - 12, 12, 'carrier_command', 'time: ' + time, 8);

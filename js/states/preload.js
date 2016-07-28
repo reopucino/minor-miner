@@ -19,6 +19,11 @@ MinerGame.preloadState.prototype = {
     for (var i = 1; i <= 17; i++) {
       this.load.tilemap(i.toString(), 'assets/tilemaps/' + i.toString() + '.json', null, Phaser.Tilemap.TILED_JSON);
     }
+    // load hardMode levels
+    // level tilemaps
+    for (var i = 1; i <= 1; i++) {
+      this.load.tilemap(i.toString() + ' hard', 'assets/tilemaps/' + i.toString() + ' hard.json', null, Phaser.Tilemap.TILED_JSON);
+    }
     // load last level
     this.load.tilemap('final', 'assets/tilemaps/final.json', null, Phaser.Tilemap.TILED_JSON);
     // load victory screen
@@ -29,10 +34,12 @@ MinerGame.preloadState.prototype = {
     this.load.image('tiles', 'assets/img/tiles.png');
     this.load.image('outside-tiles', 'assets/img/outside-tiles.png');
     this.load.spritesheet('player', 'assets/img/player.png', 16, 16, 16);
+    this.load.spritesheet('player-speedo', 'assets/img/player-speedo.png', 16, 16, 16);
     this.load.spritesheet('dust', 'assets/img/dust.png', 8, 8);
     this.load.image('particle', 'assets/img/particle.png');
     this.load.spritesheet('player-warp', 'assets/img/player-warp.png', 24, 24);
     this.load.image('powerup', 'assets/img/item-gun.png');
+    this.load.image('infinite-battery', 'assets/img/infinite-battery.png');
     this.load.spritesheet('portal', 'assets/img/portal.png', 16, 16);
     this.load.spritesheet('secret', 'assets/img/secret.png', 16, 16);
     this.load.image('secret-particle', 'assets/img/secret-particle.png');
@@ -59,10 +66,11 @@ MinerGame.preloadState.prototype = {
     this.load.audio('dead-drill', 'assets/audio/dead-drill.wav');
     this.load.audio('final-level', 'assets/audio/final-level.mp3');
     this.load.audio('victory', 'assets/audio/victory.mp3');
+    this.load.audio('hard-mode', 'assets/audio/hard-mode.mp3');
     this.load.audio('rumble', 'assets/audio/rumble.wav');
   },
   create: function() {
-    this.state.start('menu');
-    // this.state.start('continue');
+    // this.state.start('menu');
+    this.state.start('continue');
   }
 };

@@ -110,7 +110,7 @@
 </data>
  </layer>
  <objectgroup name="objectsLayer">
-  <object id="1" name="Player" type="playerStart" gid="66" x="63" y="1454" width="16" height="16"/>
+  <object id="1" name="Player" type="playerStart" gid="66" x="65" y="1456" width="16" height="16"/>
   <object id="8" name="Portal" type="portal" gid="79" x="320" y="224" width="16" height="16">
    <properties>
     <property name="animated" type="bool" value="true"/>

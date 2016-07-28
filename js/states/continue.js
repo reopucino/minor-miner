@@ -3,6 +3,9 @@ var MinerGame = MinerGame || {};
 MinerGame.continueState = function(){};
 
 MinerGame.continueState.prototype.create = function() {
+  // FOR debugging
+  MinerGame.hardMode = true;
+
   // audio
   this.blipSound = this.game.add.audio('blip');
   this.blipSound.volume -= 0.6;
@@ -10,7 +13,7 @@ MinerGame.continueState.prototype.create = function() {
   // conditional text
   this.lines = ['To be continued...?', '>:D'];
   if (MinerGame.hardMode) {
-    this.lines = ['Wait, what???\n\nWhat\'s going on?', '...', '>:O'];
+    this.lines = ['Wait, what?!\n\nWhat\'s going on?!', '>:O'];
   }
 
   // robot text
@@ -25,12 +28,14 @@ MinerGame.continueState.prototype.create = function() {
   this.lineTimer = 0;
   this.currLineIndex = 0;
   this.currLine = this.lines[0];
+  this.charsPaused = false;
 };
 
 MinerGame.continueState.prototype.update = function() {
   // increment by chars
   this.charClock++;
   // update every 3 frames
+
   if (this.charClock > this.charTimer + 3 && !this.charsPaused) {
     // advance to next char and reset timer
     this.charTimer = this.charClock;
@@ -57,12 +62,10 @@ MinerGame.continueState.prototype.update = function() {
       } else { // at end of lines, nothing more to read
         // move to next state
         if (MinerGame.hardMode) {
-          // go to HARD LEVELS - upgrade state
-          // this.game.state.start('upgrade');
-          this.game.state.start('menu');
+          // upgrade the playerrrrr
+          this.game.state.start('upgrade');
         } else {
-          // go back to main menu
-          this.game.state.start('menu');
+          this.game.state.start('thanks');
         }
       }
     }
@@ -86,4 +89,4 @@ MinerGame.continueState.prototype.shakeText = function(text, x, y) {
     text.x = x + randX;
     text.y = y + randY;
   }
-}
+};

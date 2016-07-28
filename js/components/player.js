@@ -2,7 +2,11 @@ var MinerGame = MinerGame || {};
 
 // PLAYER CLASS //
 MinerGame.Player = function(game, input, x, y) {
-  Phaser.Sprite.call(this, game, x, y, 'player');
+  if (MinerGame.hardMode) {
+    Phaser.Sprite.call(this, game, x, y, 'player-speedo');
+  } else {
+    Phaser.Sprite.call(this, game, x, y, 'player');
+  }
   this.game = game;
   this.input = input;
   this.alive = true;
@@ -88,11 +92,16 @@ MinerGame.Player = function(game, input, x, y) {
   // drill charge UI
   this.maxDrillCharge = 25;
   this.drillCharge = this.maxDrillCharge;
-  this.battery = this.game.add.sprite(12, 12, 'battery');
-  this.battery.frame = 6;
-  this.game.layers.ui.add(this.battery);
-  if (!MinerGame.drillEnabled) {
-    this.battery.kill();
+  if (MinerGame.hardMode) {
+    this.battery = this.game.add.image(12, 12, 'infinite-battery');
+    this.game.layers.ui.add(this.battery);
+  } else {
+    this.battery = this.game.add.sprite(12, 12, 'battery');
+    this.battery.frame = 6;
+    this.game.layers.ui.add(this.battery);
+    if (!MinerGame.drillEnabled) {
+      this.battery.kill();
+    }
   }
 
   // init with spawning logic
@@ -124,11 +133,15 @@ MinerGame.Player.prototype.update = function() {
     return;
   }
 
-  // update battery charge
-  if (this.body.onFloor()) {
+  if (MinerGame.hardMode) {
     this.drillCharge = this.maxDrillCharge;
+  } else {
+    // update battery charge
+    if (this.body.onFloor()) {
+      this.drillCharge = this.maxDrillCharge;
+    }
+    this.battery.frame = Math.floor(this.drillCharge / this.maxDrillCharge * 6);
   }
-  this.battery.frame = Math.floor(this.drillCharge / this.maxDrillCharge * 6);
 
   // animations and state logic
   this.currentState();
