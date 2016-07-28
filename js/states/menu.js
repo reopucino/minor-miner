@@ -77,6 +77,7 @@ MinerGame.menuState.prototype = {
         MinerGame.startTime = this.game.time.totalElapsedSeconds();
         MinerGame.deaths = 0;
         MinerGame.secrets = 0;
+        MinerGame.hardMode = false;
         this.game.camera.onFadeComplete.addOnce(function() {
           this.starting = false;
           this.game.state.start('play');

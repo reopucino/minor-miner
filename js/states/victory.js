@@ -129,6 +129,8 @@ MinerGame.victoryState.prototype.erupt = function() {
   var crystalPercent = Math.floor(MinerGame.secrets / MinerGame.totalSecrets * 100).toString() + '%';
   if (crystalPercent === '100%' && MinerGame.totalSecrets > MinerGame.secrets) {
     crystalPercent = '99%';
+  } else if (crystalPercent === '100%') {
+    MinerGame.hardMode = true;
   }
   var stats = 'time: ' + MinerGame.totalTime + ' seconds\n\nDeaths: ' + MinerGame.deaths + '\n\nCrystals: ' + crystalPercent;
   this.statText = this.game.add.bitmapText(this.game.world.centerX, 125, 'carrier_command', stats, 12);
@@ -136,7 +138,6 @@ MinerGame.victoryState.prototype.erupt = function() {
 
   this.startKey = this.game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
   this.startKey.onDown.add(function() {
-    console.log('start key');
     if (this.starting) {
       return;
     }
@@ -151,7 +152,7 @@ MinerGame.victoryState.prototype.erupt = function() {
       this.game.camera.onFadeComplete.addOnce(function() {
         this.dancer = null;
         this.starting = false;
-        this.game.state.start('menu');
+        this.game.state.start('continue');
       }, this);
     }, this)
   }, this);
