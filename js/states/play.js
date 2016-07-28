@@ -3,6 +3,8 @@ var MinerGame = MinerGame || {};
 MinerGame.secrets = 0;
 MinerGame.totalSecrets = 153;
 MinerGame.startTime = MinerGame.startTime || 0;
+MinerGame.totalTime = 0;
+MinerGame.deaths = 0;
 
 // GAMEPLAY STATE //
 MinerGame.playState = function(){};
@@ -38,7 +40,7 @@ MinerGame.playState.prototype = {
     this.secretSound = this.add.audio('secret');
     this.secretSound.volume -= .85;
     this.breakBlockSound = this.add.audio('dust');
-    this.breakBlockSound.volume -= .3;
+    this.breakBlockSound.volume -= .8;
     this.springSound = this.add.audio('spring');
     this.springSound.volume -= .5;
     this.drillBurstSound = this.game.add.audio('drill-burst');
@@ -218,7 +220,6 @@ MinerGame.playState.prototype = {
     this.tutTextUpdate();
 
     // shake death text
-    this.shakeText(this.deathText);
     this.shakeText(this.tutText);
     this.shakeText(this.skipText, this.game.world.centerX, this.game.height - 12);
   }
@@ -252,15 +253,17 @@ MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
   playerWarp.animations.add('warp');
   playerWarp.animations.play('warp', 25, false, true);
   // start next level on warp animation end
-  playerWarp.events.onAnimationComplete.add(function() {
+  playerWarp.events.onAnimationComplete.addOnce(function() {
     this.game.camera.fade(0x000000, 100);
-    this.game.camera.onFadeComplete.add(function() {
+    this.game.camera.onFadeComplete.addOnce(function() {
       MinerGame.level = portal.targetTilemap;
       this.lavaParticles = null;
       this.lavaSplash = null;
       if (MinerGame.level === 'end') {
         MinerGame.level = 1;
-        this.game.state.start('thanks');
+        // save total time
+        MinerGame.totalTime = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
+        this.game.state.start('victory');
       } else {
         this.game.state.start(this.game.state.current);
       }
@@ -285,6 +288,9 @@ MinerGame.playState.prototype.playerTrapHandler = function(player, trap) {
   this.game.camera.unfollow();
   // player dies
   player.pendingDestroy = true;
+
+  // increment death count
+  MinerGame.deaths++;
 
   // shake camera
   // this.startCameraShake();
@@ -328,16 +334,12 @@ MinerGame.playState.prototype.playerTrapHandler = function(player, trap) {
   this.lavaSplash.start(false, 5000, 20);
 
   // shake the camera
-  this.game.camera.shake(0.01, 250);
-  this.game.camera.onShakeComplete.add(function() {
-    this.game.time.events.add(800, function() {
-      this.lavaSplash.on = false;
-      // fade out
-      this.game.camera.fade(0x000000, 100);
-      this.game.camera.onFadeComplete.add(function() {
-        // restart level after camera fadeout
-        this.game.state.start(this.game.state.current);
-      }, this);
+  this.game.camera.shake(0.004, 1200);
+  this.game.camera.onShakeComplete.addOnce(function() {
+    // restart level after camera shake
+    this.game.camera.fade(0x000000, 250);
+    this.game.camera.onFadeComplete.addOnce(function() {
+      this.game.state.start(this.game.state.current);
     }, this);
   }, this);
 };
@@ -501,6 +503,10 @@ MinerGame.playState.prototype.createSecrets = function() {
 
 MinerGame.playState.prototype.updateSecretText = function(numSecrets) {
   var percentage = Math.floor(numSecrets / MinerGame.totalSecrets * 100).toString() + '%';
+  // edge case
+  if (MinerGame.totalSecrets > numSecrets && percentage === '100%') {
+    percentage = '99%';
+  }
   this.secretText.text = 'crystals: ' + percentage;
 };
 

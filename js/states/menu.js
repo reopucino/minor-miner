@@ -69,12 +69,15 @@ MinerGame.menuState.prototype = {
       var startTween = this.game.add.tween(this.startText).to({ alpha: 0 }, 100, "Linear", true, 0, -1, true);
       // after 1.5 sec, transition to next state
       this.game.time.events.add(700, function() {
-        this.game.camera.fade(0x00000, 250);
+        this.game.camera.fade(0x000000, 250);
+        MinerGame.currentTrack = null;
         MinerGame.newLevel = true;
         MinerGame.level = '1';
         MinerGame.drillEnabled = false;
         MinerGame.startTime = this.game.time.totalElapsedSeconds();
-        this.game.camera.onFadeComplete.add(function() {
+        MinerGame.deaths = 0;
+        MinerGame.secrets = 0;
+        this.game.camera.onFadeComplete.addOnce(function() {
           this.starting = false;
           this.game.state.start('play');
         }, this);

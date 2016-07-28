@@ -21,9 +21,13 @@ MinerGame.preloadState.prototype = {
     }
     // load last level
     this.load.tilemap('final', 'assets/tilemaps/final.json', null, Phaser.Tilemap.TILED_JSON);
+    // load victory screen
+    this.load.tilemap('victory', 'assets/tilemaps/victory.json', null, Phaser.Tilemap.TILED_JSON);
+
 
     // load tiles/sprites/images
     this.load.image('tiles', 'assets/img/tiles.png');
+    this.load.image('outside-tiles', 'assets/img/outside-tiles.png');
     this.load.spritesheet('player', 'assets/img/player.png', 16, 16, 16);
     this.load.spritesheet('dust', 'assets/img/dust.png', 8, 8);
     this.load.image('particle', 'assets/img/particle.png');
@@ -54,6 +58,8 @@ MinerGame.preloadState.prototype = {
     this.load.audio('blip', 'assets/audio/blip.wav');
     this.load.audio('dead-drill', 'assets/audio/dead-drill.wav');
     this.load.audio('final-level', 'assets/audio/final-level.mp3');
+    this.load.audio('victory', 'assets/audio/victory.mp3');
+    this.load.audio('rumble', 'assets/audio/rumble.wav');
   },
   create: function() {
     this.state.start('menu');
