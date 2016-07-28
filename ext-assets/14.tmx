@@ -85,7 +85,7 @@
     <property name="sprite" value="secret"/>
    </properties>
   </object>
-  <object id="40" name="Secret" type="secret" gid="93" x="73" y="375" width="16" height="16">
+  <object id="40" name="Secret" type="secret" gid="93" x="73" y="368" width="16" height="16">
    <properties>
     <property name="animated" type="bool" value="true"/>
     <property name="sprite" value="secret"/>
