@@ -25,6 +25,23 @@ MinerGame.victoryState.prototype.create = function() {
   //  resize game world to match layer dimensions
   this.backgroundLayer.resizeWorld();
 
+  // foreground mist and clouds
+  this.clouds = this.game.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'mist');
+  this.clouds.autoScroll(-8, 0);
+  // particles
+  this.cloudParticles = this.game.add.emitter(this.game.world.centerX, this.game.world.height, 400);
+  this.cloudParticles.width = this.game.world.width;
+  this.cloudParticles.makeParticles('cloud-particle');
+  this.cloudParticles.minParticleScale = 0.3;
+  this.cloudParticles.maxParticleScale = 1.2;
+  this.cloudParticles.alpha = 0.2;
+  this.cloudParticles.setYSpeed(-500, -325);
+  this.cloudParticles.gravity = 0;
+  this.cloudParticles.setXSpeed(-5, 5);
+  this.cloudParticles.minRotation = 0;
+  this.cloudParticles.maxRotation = 0;
+  this.cloudParticles.start(false, 2200, 5, 0);
+
   // lava splashing
   this.lavaSplash = this.game.add.emitter(this.game.world.centerX, this.game.world.height - 176, 200);
   this.lavaSplash.makeParticles('particle');

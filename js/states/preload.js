@@ -21,7 +21,7 @@ MinerGame.preloadState.prototype = {
     }
     // load hardMode levels
     // level tilemaps
-    for (var i = 1; i <= 1; i++) {
+    for (var i = 1; i <= 2; i++) {
       this.load.tilemap(i.toString() + ' hard', 'assets/tilemaps/' + i.toString() + ' hard.json', null, Phaser.Tilemap.TILED_JSON);
     }
     // load last level
@@ -38,6 +38,7 @@ MinerGame.preloadState.prototype = {
     this.load.spritesheet('dust', 'assets/img/dust.png', 8, 8);
     this.load.image('particle', 'assets/img/particle.png');
     this.load.spritesheet('player-warp', 'assets/img/player-warp.png', 24, 24);
+    this.load.spritesheet('player-speedo-warp', 'assets/img/player-speedo-warp.png', 24, 24);
     this.load.image('powerup', 'assets/img/item-gun.png');
     this.load.image('infinite-battery', 'assets/img/infinite-battery.png');
     this.load.spritesheet('portal', 'assets/img/portal.png', 16, 16);
@@ -46,7 +47,11 @@ MinerGame.preloadState.prototype = {
     this.load.spritesheet('block-dust', 'assets/img/block-dust.png', 16, 16);
     this.load.spritesheet('drill', 'assets/img/drill.png', 16, 8);
     this.load.image('drill-particle', 'assets/img/drill-particle.png');
+    this.load.image('mist', 'assets/img/mist.png');
     this.load.spritesheet('battery', 'assets/img/battery.png', 36, 16);
+    this.load.image('cloud-particle', 'assets/img/cloud-particle.png');
+    this.load.spritesheet('robot', 'assets/img/robot.png', 24, 32);
+
 
     // load audio assets
     this.load.audio('intro', 'assets/audio/intro.mp3');
@@ -71,6 +76,6 @@ MinerGame.preloadState.prototype = {
   },
   create: function() {
     // this.state.start('menu');
-    this.state.start('continue');
+    this.state.start('finale');
   }
 };

@@ -4,7 +4,7 @@ MinerGame.continueState = function(){};
 
 MinerGame.continueState.prototype.create = function() {
   // FOR debugging
-  MinerGame.hardMode = true;
+  // MinerGame.hardMode = true;
 
   // audio
   this.blipSound = this.game.add.audio('blip');

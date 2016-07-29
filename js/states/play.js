@@ -27,7 +27,11 @@ MinerGame.playState.prototype = {
       MinerGame.currentTrack = this.game.add.audio('final-level');
       MinerGame.currentTrack.loopFull();
     } else if (!MinerGame.currentTrack) {
-      MinerGame.currentTrack = this.game.add.audio('field1');
+      var trackKey = 'field1';
+      if (MinerGame.hardMode) {
+        trackKey = 'hard-mode';
+      }
+      MinerGame.currentTrack = this.game.add.audio(trackKey);
       MinerGame.currentTrack.volume -= .2;
       MinerGame.currentTrack.loopFull();
     }
@@ -85,7 +89,7 @@ MinerGame.playState.prototype = {
     // actor/fx rendering layers
     this.game.layers = {
       player: this.game.add.group(),
-      enemies: this.game.add.group(),
+      foreground: this.game.add.group(),
       effects: this.game.add.group(), // bullets and dust
       ui: this.game.add.group()
     };
@@ -135,10 +139,18 @@ MinerGame.playState.prototype = {
     //the camera will follow the player in the world
     this.game.camera.follow(this.player);
 
-    // create floating lava particles
+    // if outside, make clouds
+    var floatParticleKey = 'particle';
+    if (MinerGame.hardMode) {
+      this.clouds = this.game.add.tileSprite(0, 0, this.game.world.width, this.game.world.height, 'mist');
+      this.clouds.autoScroll(-8, 0);
+      this.game.layers.foreground.add(this.clouds);
+      floatParticleKey = 'cloud-particle';
+    }
+    // create floating lava/cloud particles
     this.lavaParticles = this.game.add.emitter(this.game.world.centerX, this.game.world.height, 400);
   	this.lavaParticles.width = this.game.world.width;
-  	this.lavaParticles.makeParticles('particle');
+  	this.lavaParticles.makeParticles(floatParticleKey);
   	this.lavaParticles.minParticleScale = 0.3;
   	this.lavaParticles.maxParticleScale = 1.2;
     this.lavaParticles.alpha = 0.2;
@@ -148,7 +160,7 @@ MinerGame.playState.prototype = {
   	this.lavaParticles.minRotation = 0;
   	this.lavaParticles.maxRotation = 0;
   	this.lavaParticles.start(false, 2200, 5, 0);
-
+    this.game.layers.foreground.add(this.lavaParticles);
 
     // make lava splash emitter (for player deaths)
     this.lavaSplash = this.game.add.emitter(0, 0, 200);
@@ -159,6 +171,7 @@ MinerGame.playState.prototype = {
     this.lavaSplash.maxParticleScale = 1.5;
     this.lavaSplash.setYSpeed(-280, -150);
     this.lavaSplash.gravity = 500;
+    this.game.layers.foreground.add(this.lavaSplash);
 
     // make the UI
     // levels
@@ -197,6 +210,9 @@ MinerGame.playState.prototype = {
         'My name is A5IM0V-pr1m3.', 'clearly, I am a robot.',
         'I see that you are lost.',
         'That was my doing...','You see, my plan is to\n\nlead you mindlessly from\n\nroom to room with those\n\ngreen portals until you\n\neither give up or die!', 'HAHAHAHAHA!!1!*!!!1!!\n\nso evil!!', '...',  'You *might* get out alive\n\nif you run with the arrow\n\nkeys and jump with \'x\'.', '...so fun...', 'Try not to die, you\n\nmiserable yellow\n\ncreature.', '<3']);
+      } else if (MinerGame.level === '1 hard') {
+        this.drawTutorialText(['Ugh! You disgust me, human.',
+        'But your tenacity is\n\nquite remarkable.', '...', 'I\'ve decided to keep\n\nyou as a pet!', 'A greasy, ugly,\n\nfascinating pet\n\nhuman.', 'Don\'t try to run\n\naway, biped.', 'You\'ll never make\n\nit out alive!!!1!', 'ahahahahaaha\n\nhahahahaheha\n\nshhnahf!!@!!\n\n@!@#!!#!', 'ha!']);
       }
     }
   },
@@ -239,8 +255,17 @@ MinerGame.playState.prototype = {
 // COLLISION HANDLERS //
 
 MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
+  portal.body.velocity.x = 0;
+  portal.body.velocity.y = 0;
+  // flag to disable portalHandler (multiple portals)
+  if (this.transporting) {
+    return;
+  }
+  this.transporting = true;
+
   // flag that the state is resetting because of a new level (for tut text)
   MinerGame.newLevel = true;
+
   // stop following player with camera
   this.game.camera.unfollow();
   // destroy player drill
@@ -255,7 +280,11 @@ MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
   // play warp sound
   this.portalSound.play();
   // add player warp sprite
-  var playerWarp = this.game.add.sprite(portal.centerX, portal.centerY, 'player-warp');
+  var key = 'player-warp';
+  if (MinerGame.hardMode) {
+    key = 'player-speedo-warp';
+  }
+  var playerWarp = this.game.add.sprite(portal.centerX, portal.centerY, key);
   playerWarp.anchor.setTo(0.5, 0.5);
   playerWarp.animations.add('warp');
   playerWarp.animations.play('warp', 25, false, true);
@@ -266,11 +295,13 @@ MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
       MinerGame.level = portal.targetTilemap;
       this.lavaParticles = null;
       this.lavaSplash = null;
+      this.transporting = false;
       if (MinerGame.level === 'end') {
-        MinerGame.level = 1;
-        // save total time
         MinerGame.totalTime = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
         this.game.state.start('victory');
+      } else if (MinerGame.level === 'finale') {
+        MinerGame.totalTime = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
+        this.game.state.start('finale');
       } else {
         this.game.state.start(this.game.state.current);
       }

@@ -1,6 +1,7 @@
 var MinerGame = MinerGame || {};
 
 MinerGame.upgradeState = function(){};
+MinerGame.hardMode = true;
 
 MinerGame.upgradeState.prototype.create = function() {
   // audio
@@ -55,6 +56,11 @@ MinerGame.upgradeState.prototype.update = function() {
       MinerGame.currentTrack.volume -= 2;
       MinerGame.currentTrack.loopFull();
 
+      // add hard-mode text
+      // thanks text
+      this.hardText = this.game.add.bitmapText(this.game.world.centerX, 56, 'carrier_command', 'HARD MODE UNLOCKED', 24);
+      this.hardText.anchor.setTo(0.5, 1);
+
       // add instructions
       this.powerupText = this.game.add.bitmapText(this.game.world.centerX, this.game.height - 150, 'carrier_command', 'Your laser drill now has infinite charge', 12);
       this.powerupText.anchor.setTo(0.5, 0.5);
@@ -63,13 +69,16 @@ MinerGame.upgradeState.prototype.update = function() {
       this.battery = this.game.add.image(12, 12, 'infinite-battery');
       this.battery.anchor.setTo(0, 0.5);
 
-      this.game.time.events.add(3000, function() {
-        MinerGame.startTime = this.game.time.totalElapsedSeconds();
-        MinerGame.deaths = 0;
-        MinerGame.secrets = 0;
-        MinerGame.level = '1 hard';
-        MinerGame.drillEnabled = true;
-        this.game.state.start('play');
+      this.game.time.events.add(4000, function() {
+        this.game.camera.fade(0x000000, 100);
+        this.game.camera.onFadeComplete.addOnce(function() {
+          MinerGame.startTime = this.game.time.totalElapsedSeconds();
+          MinerGame.deaths = 0;
+          MinerGame.secrets = 0;
+          MinerGame.level = '1 hard';
+          MinerGame.drillEnabled = true;
+          this.game.state.start('play');
+        }, this);
       }, this);
     }
   }
@@ -83,6 +92,9 @@ MinerGame.upgradeState.prototype.update = function() {
     }
     this.powerupText.x = this.game.world.centerX + randX;
     this.powerupText.y = this.game.height - 150 + randY;
+
+    this.hardText.x = this.game.world.centerX + randX;
+    this.hardText.y = 56 + randY;
   }
 };
 

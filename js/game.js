@@ -13,6 +13,7 @@ MinerGame.game.state.add('thanks', MinerGame.thanksState);
 MinerGame.game.state.add('victory', MinerGame.victoryState);
 MinerGame.game.state.add('continue', MinerGame.continueState);
 MinerGame.game.state.add('upgrade', MinerGame.upgradeState);
+MinerGame.game.state.add('finale', MinerGame.finaleState);
 
 // run game
 MinerGame.game.state.start('boot');

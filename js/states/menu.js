@@ -72,12 +72,12 @@ MinerGame.menuState.prototype = {
         this.game.camera.fade(0x000000, 250);
         MinerGame.currentTrack = null;
         MinerGame.newLevel = true;
-        MinerGame.level = '1';
-        MinerGame.drillEnabled = false;
+        MinerGame.hardMode = true;
+        MinerGame.level = '1 hard';
+        MinerGame.drillEnabled = true;
         MinerGame.startTime = this.game.time.totalElapsedSeconds();
         MinerGame.deaths = 0;
         MinerGame.secrets = 0;
-        MinerGame.hardMode = false;
         this.game.camera.onFadeComplete.addOnce(function() {
           this.starting = false;
           this.game.state.start('play');
