@@ -58,12 +58,12 @@ MinerGame.upgradeState.prototype.update = function() {
 
       // add hard-mode text
       // thanks text
-      this.hardText = this.game.add.bitmapText(this.game.world.centerX, 56, 'carrier_command', 'HARD MODE UNLOCKED', 24);
+      this.hardText = this.game.add.bitmapText(this.game.world.centerX, this.game.world.centerY - 150, 'carrier_command', 'HARD MODE UNLOCKED', 24);
       this.hardText.anchor.setTo(0.5, 1);
 
       // add instructions
-      this.powerupText = this.game.add.bitmapText(this.game.world.centerX, this.game.height - 150, 'carrier_command', 'Your laser drill now has infinite charge', 12);
-      this.powerupText.anchor.setTo(0.5, 0.5);
+      this.powerupText = this.game.add.bitmapText(this.game.world.centerX, this.game.world.centerY + 150, 'carrier_command', 'Your laser drill now has infinite charge', 12);
+      this.powerupText.anchor.setTo(0.5, 0);
 
       // add battery sprite
       this.battery = this.game.add.image(12, 12, 'infinite-battery');
@@ -73,7 +73,7 @@ MinerGame.upgradeState.prototype.update = function() {
         this.game.camera.fade(0x000000, 100);
         this.game.camera.onFadeComplete.addOnce(function() {
           MinerGame.startTime = this.game.time.totalElapsedSeconds();
-          MinerGame.deaths = 0;
+          MinerGame.hardModeDeaths = 0;
           MinerGame.secrets = 0;
           MinerGame.level = '1 hard';
           MinerGame.drillEnabled = true;
@@ -90,11 +90,11 @@ MinerGame.upgradeState.prototype.update = function() {
       randX *= -1;
       randY *= -1;
     }
-    this.powerupText.x = this.game.world.centerX + randX;
-    this.powerupText.y = this.game.height - 150 + randY;
-
     this.hardText.x = this.game.world.centerX + randX;
-    this.hardText.y = 56 + randY;
+    this.hardText.y = this.game.world.centerY - 150 + randY;
+
+    this.powerupText.x = this.game.world.centerX + randX;
+    this.powerupText.y = this.game.world.centerY + 150 + randY;
   }
 };
 

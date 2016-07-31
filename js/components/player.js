@@ -77,7 +77,7 @@ MinerGame.Player = function(game, input, x, y) {
   this.wasOnGround = true; // for custom ground check
   this.groundDelay = 6; // player can jump a few frames frames after leaving ground
   this.groundDelayTimer = 0;
-  this.wallBreakTime = 40; // how long player moves away from wall before they "unstick"
+  this.wallBreakTime = 20; // how long player moves away from wall before they "unstick"
   this.wallBreakClock = 0;
 
   // drill sprite

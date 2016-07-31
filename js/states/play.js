@@ -5,6 +5,7 @@ MinerGame.totalSecrets = 153;
 MinerGame.startTime = MinerGame.startTime || 0;
 MinerGame.totalTime = 0;
 MinerGame.deaths = 0;
+MinerGame.hardModeDeaths = 0;
 
 // GAMEPLAY STATE //
 MinerGame.playState = function(){};
@@ -136,6 +137,19 @@ MinerGame.playState.prototype = {
     var objects = this.findObjectsByType('playerStart', this.map, 'objectsLayer');
     this.player = new MinerGame.Player(this.game, this.input, objects[0].x, objects[0].y);
 
+    // spawn robot if exists
+    var robots = this.findObjectsByType('robot', this.map, 'objectsLayer');
+    if (robots.length > 0) {
+      this.robot = this.game.add.sprite(robots[0].x, robots[0].y, 'robot');
+      this.robot.anchor.setTo(0.5, 0.5);
+      this.robot.animations.add('hover');
+      this.robot.animations.play('hover', 8, true);
+      this.game.physics.arcade.enable(this.robot);
+      this.robot.body.immovable = true;
+    } else {
+      this.robot = null;
+    }
+
     //the camera will follow the player in the world
     this.game.camera.follow(this.player);
 
@@ -235,6 +249,10 @@ MinerGame.playState.prototype = {
     this.game.physics.arcade.overlap(this.player, this.secrets, this.playerSecretHandler, null, this);
     // powerup
     this.game.physics.arcade.overlap(this.player, this.powerups, this.playerPowerupHandler, null, this);
+    // robot
+    if (this.robot) {
+      this.game.physics.arcade.overlap(this.player, this.robot, this.playerRobotHandler, null, this);
+    }
 
     // timer
     this.updateTimerText();
@@ -299,9 +317,6 @@ MinerGame.playState.prototype.playerPortalHandler = function(player, portal) {
       if (MinerGame.level === 'end') {
         MinerGame.totalTime = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
         this.game.state.start('victory');
-      } else if (MinerGame.level === 'finale') {
-        MinerGame.totalTime = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
-        this.game.state.start('finale');
       } else {
         this.game.state.start(this.game.state.current);
       }
@@ -328,7 +343,11 @@ MinerGame.playState.prototype.playerTrapHandler = function(player, trap) {
   player.pendingDestroy = true;
 
   // increment death count
-  MinerGame.deaths++;
+  if (MinerGame.hardMode) {
+    MinerGame.hardModeDeaths++;
+  } else {
+    MinerGame.deaths++;
+  }
 
   // shake camera
   // this.startCameraShake();
@@ -474,6 +493,15 @@ MinerGame.playState.prototype.playerPowerupHandler = function(player, powerup) {
   '>:D',
   'So long, ugly humanoid!\n\nmay we never meet again!'
   ]);
+};
+
+MinerGame.playState.prototype.playerRobotHandler = function(player, robot) {
+  console.log('player robot collisions');
+  if (player.currentState != player.drillState) {
+    return;
+  }
+  MinerGame.hardModeTime = Math.floor(this.game.time.totalElapsedSeconds() - MinerGame.startTime);
+  this.game.state.start('finale');
 };
 
 // GAMEPLAY STATE UTILITIES //

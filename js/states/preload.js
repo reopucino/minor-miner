@@ -20,12 +20,12 @@ MinerGame.preloadState.prototype = {
       this.load.tilemap(i.toString(), 'assets/tilemaps/' + i.toString() + '.json', null, Phaser.Tilemap.TILED_JSON);
     }
     // load hardMode levels
-    // level tilemaps
     for (var i = 1; i <= 2; i++) {
       this.load.tilemap(i.toString() + ' hard', 'assets/tilemaps/' + i.toString() + ' hard.json', null, Phaser.Tilemap.TILED_JSON);
     }
     // load last level
     this.load.tilemap('final', 'assets/tilemaps/final.json', null, Phaser.Tilemap.TILED_JSON);
+    this.load.tilemap('final hard', 'assets/tilemaps/final hard.json', null, Phaser.Tilemap.TILED_JSON);
     // load victory screen
     this.load.tilemap('victory', 'assets/tilemaps/victory.json', null, Phaser.Tilemap.TILED_JSON);
 
@@ -75,7 +75,7 @@ MinerGame.preloadState.prototype = {
     this.load.audio('rumble', 'assets/audio/rumble.wav');
   },
   create: function() {
-    // this.state.start('menu');
-    this.state.start('finale');
+    this.state.start('menu');
+    // this.state.start('finale');
   }
 };

@@ -37,7 +37,7 @@
                     {
                      "animated":true,
                      "sprite":"portal",
-                     "targetTilemap":"finale"
+                     "targetTilemap":"2 hard"
                     },
                  "propertytypes":
                     {
@@ -61,7 +61,7 @@
                     {
                      "animated":true,
                      "sprite":"portal",
-                     "targetTilemap":"finale"
+                     "targetTilemap":"2 hard"
                     },
                  "propertytypes":
                     {
@@ -85,7 +85,7 @@
                     {
                      "animated":true,
                      "sprite":"portal",
-                     "targetTilemap":"finale"
+                     "targetTilemap":"2 hard"
                     },
                  "propertytypes":
                     {
@@ -109,7 +109,7 @@
                     {
                      "animated":true,
                      "sprite":"portal",
-                     "targetTilemap":"finale"
+                     "targetTilemap":"2 hard"
                     },
                  "propertytypes":
                     {

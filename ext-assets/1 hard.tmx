@@ -52,28 +52,28 @@
    <properties>
     <property name="animated" type="bool" value="true"/>
     <property name="sprite" value="portal"/>
-    <property name="targetTilemap" value="finale"/>
+    <property name="targetTilemap" value="2 hard"/>
    </properties>
   </object>
   <object id="20" name="Portal" type="portal" gid="79" x="512" y="336" width="16" height="16">
    <properties>
     <property name="animated" type="bool" value="true"/>
     <property name="sprite" value="portal"/>
-    <property name="targetTilemap" value="finale"/>
+    <property name="targetTilemap" value="2 hard"/>
    </properties>
   </object>
   <object id="21" name="Portal" type="portal" gid="79" x="512" y="320" width="16" height="16">
    <properties>
     <property name="animated" type="bool" value="true"/>
     <property name="sprite" value="portal"/>
-    <property name="targetTilemap" value="finale"/>
+    <property name="targetTilemap" value="2 hard"/>
    </properties>
   </object>
   <object id="22" name="Portal" type="portal" gid="79" x="512" y="304" width="16" height="16">
    <properties>
     <property name="animated" type="bool" value="true"/>
     <property name="sprite" value="portal"/>
-    <property name="targetTilemap" value="finale"/>
+    <property name="targetTilemap" value="2 hard"/>
    </properties>
   </object>
  </objectgroup>
